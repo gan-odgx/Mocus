@@ -1,9 +1,11 @@
+import CoreLocation
 import SwiftUI
 import NetworkExtension
 
 struct RootView: View {
     @EnvironmentObject private var session: SpoofSession
     @EnvironmentObject private var pairing: PairingStore
+    @Environment(\.scenePhase) private var scenePhase
     @State private var showSettings = false
     @State private var showPlaces = false
 
@@ -11,7 +13,7 @@ struct RootView: View {
         // Bottom chrome is a sibling overlay aligned to the bottom — no full-screen
         // Spacer layer that can steal / pass map taps through the tray.
         ZStack(alignment: .bottom) {
-            MapHomeView()
+            MapHomeView(onShowPlaces: { showPlaces = true })
 
             BottomControlsView(
                 showSettings: $showSettings,
@@ -35,10 +37,29 @@ struct RootView: View {
             get: { session.lastError != nil },
             set: { if !$0 { session.lastError = nil } }
         )) {
-            Button("OK", role: .cancel) { session.lastError = nil }
+            // Every error that has a fix offers it, so nobody is left with only "OK".
+            switch session.lastErrorAction {
+            case .some(.openLocalDevVPN):
+                Button("Open LocalDevVPN") { dismissError(); LocalDevVPN.openOrInstall() }
+            case .some(.openSettings):
+                Button("Settings") { dismissError(); showSettings = true }
+            case .some(.openCellularConnect):
+                Button("Connect with mobile data") { dismissError(); session.showCellularConnect = true }
+            case .none:
+                EmptyView()
+            }
+            Button("OK", role: .cancel) { dismissError() }
         } message: {
             Text(session.lastError ?? "")
         }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { session.appBecameActive(pairing: pairing) }
+        }
+    }
+
+    private func dismissError() {
+        session.lastError = nil
+        session.lastErrorAction = nil
     }
 }
 
@@ -70,10 +91,9 @@ struct StatusBarView: View {
             return .status(String(localized: "Spoofing", bundle: .appLanguage))
         case .reconnecting:
             return .status(String(localized: "Reconnecting…", bundle: .appLanguage))
-        case .dropped(let reason):
-            return .status(reason.isEmpty
-                ? String(localized: "Disconnected", bundle: .appLanguage)
-                : String(localized: "Disconnected — \(reason)", bundle: .appLanguage))
+        case .dropped:
+            // The full reason is one tap away (alert); a one-line pill stays readable.
+            return .status(String(localized: "Disconnected", bundle: .appLanguage))
         }
     }
 
@@ -120,6 +140,11 @@ struct StatusBarView: View {
                     statusContent
                 }
                 .buttonStyle(.plain)
+            } else if session.status.isDropped {
+                Button(action: session.showDropDetails) {
+                    statusContent
+                }
+                .buttonStyle(.plain)
             } else {
                 statusContent
             }
@@ -154,6 +179,8 @@ struct StatusBarView: View {
             Text(title)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
 
             Spacer(minLength: 8)
 
@@ -192,6 +219,13 @@ struct BottomControlsView: View {
 
     private let trayShape = RoundedRectangle(cornerRadius: 28, style: .continuous)
 
+    /// The user dropped or picked a new spot while already spoofing somewhere else.
+    private var pinDiffersFromSpoof: Bool {
+        guard let pin = session.pin, let sim = session.simulated else { return false }
+        return CLLocation(latitude: pin.latitude, longitude: pin.longitude)
+            .distance(from: CLLocation(latitude: sim.latitude, longitude: sim.longitude)) > 3
+    }
+
     var body: some View {
         VStack(spacing: 12) {
             if session.joystickActive {
@@ -223,8 +257,8 @@ struct BottomControlsView: View {
             }
 
             HStack(spacing: 10) {
-                trayIcon("gearshape.fill") { showSettings = true }
-                trayIcon("star.fill") { showPlaces = true }
+                trayIcon("gearshape.fill", label: "Settings") { showSettings = true }
+                trayIcon("star.fill", label: "Places") { showPlaces = true }
 
                 Button {
                     if session.joystickActive {
@@ -235,9 +269,12 @@ struct BottomControlsView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "dot.circle.and.hand.point.up.left.fill")
-                        Text(session.joystickActive ? "On" : "Joy")
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.7)
+                        // With both Stop and Teleport showing there's no room for the label.
+                        if !pinDiffersFromSpoof {
+                            Text(session.joystickActive ? "On" : "Joy")
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.7)
+                        }
                     }
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(session.joystickActive ? .black : .primary)
@@ -249,8 +286,9 @@ struct BottomControlsView: View {
                     .contentShape(Capsule())
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Movement joystick")
 
-                if session.isSpoofing {
+                if session.simulated != nil && !pinDiffersFromSpoof {
                     Button {
                         session.stop(pairing: pairing)
                     } label: {
@@ -265,9 +303,25 @@ struct BottomControlsView: View {
                     }
                     .buttonStyle(.plain)
                 } else {
+                    if session.simulated != nil {
+                        // A new pin while spoofing: keep Stop reachable next to Teleport.
+                        Button {
+                            session.stop(pairing: pairing)
+                        } label: {
+                            Image(systemName: "stop.fill")
+                                .font(.body.weight(.bold))
+                                .foregroundStyle(.white)
+                                .frame(width: 44, height: 44)
+                                .background(Circle().fill(LocusTheme.danger))
+                                .contentShape(Circle())
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Stop")
+                    }
                     Button {
                         guard let pin = session.pin else {
                             session.lastError = String(localized: "Tap the map to drop a pin first.", bundle: .appLanguage)
+                            session.lastErrorAction = nil
                             return
                         }
                         session.teleport(to: pin, pairing: pairing)
@@ -292,7 +346,7 @@ struct BottomControlsView: View {
         .contentShape(trayShape)
     }
 
-    private func trayIcon(_ systemName: String, action: @escaping () -> Void) -> some View {
+    private func trayIcon(_ systemName: String, label: LocalizedStringKey, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemName)
                 .font(.body.weight(.semibold))
@@ -302,6 +356,7 @@ struct BottomControlsView: View {
                 .contentShape(Circle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(label)
     }
 }
 

@@ -5,7 +5,11 @@ struct MapHomeView: View {
     @EnvironmentObject private var session: SpoofSession
     @EnvironmentObject private var pairing: PairingStore
 
+    /// Opens saved places; offered when there's no internet for the map and search.
+    var onShowPlaces: () -> Void = {}
+
     @StateObject private var search = PlaceSearchCompleter()
+    @StateObject private var network = NetworkStatus()
     @State private var position: MapCameraPosition = .userLocation(fallback: .automatic)
     @State private var searchText = ""
     @FocusState private var searchFocused: Bool
@@ -161,11 +165,47 @@ struct MapHomeView: View {
         }
     }
 
+    /// Neither Wi‑Fi nor mobile data: Apple's map tiles and search can't load.
+    private var offline: Bool {
+        !network.wifiOn && !network.cellularOn
+    }
+
+    private var offlineBanner: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "wifi.slash")
+                .foregroundStyle(LocusTheme.statusWarn)
+            Text("No internet: the map and search may not load. Use saved places.")
+                .font(.footnote)
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 4)
+            Button("Places", action: onShowPlaces)
+                .font(.footnote.weight(.semibold))
+                .buttonStyle(.plain)
+                .foregroundStyle(LocusTheme.accent)
+        }
+        .padding(12)
+        .locusGlass(.regular, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+    }
+
     private var topChrome: some View {
         VStack(spacing: 10) {
             StatusBarView()
 
             searchBar
+
+            if offline {
+                offlineBanner
+            }
+
+            if !searchText.isEmpty && search.results.isEmpty && (search.failed || offline) {
+                Text("Search needs internet.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(12)
+                    .locusGlass(.regular, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            }
 
             if !searchText.isEmpty && !search.results.isEmpty {
                 searchResults
@@ -337,8 +377,14 @@ struct MapHomeView: View {
     private func select(completion: MKLocalSearchCompletion) {
         Task {
             let request = MKLocalSearch.Request(completion: completion)
-            if let response = try? await MKLocalSearch(request: request).start(),
-               let item = response.mapItems.first {
+            guard let response = try? await MKLocalSearch(request: request).start() else {
+                await MainActor.run {
+                    session.lastError = String(localized: "Couldn't load that place. Search needs internet.", bundle: .appLanguage)
+                    session.lastErrorAction = nil
+                }
+                return
+            }
+            if let item = response.mapItems.first {
                 let coord = item.placemark.coordinate
                 let title = item.name ?? completion.title
                 await MainActor.run {
@@ -429,6 +475,8 @@ private extension UIWindowScene {
 @MainActor
 final class PlaceSearchCompleter: NSObject, ObservableObject, MKLocalSearchCompleterDelegate {
     @Published var results: [MKLocalSearchCompletion] = []
+    /// The last lookup failed (usually no internet).
+    @Published var failed = false
     private let completer = MKLocalSearchCompleter()
 
     var query: String = "" {
@@ -445,10 +493,16 @@ final class PlaceSearchCompleter: NSObject, ObservableObject, MKLocalSearchCompl
 
     nonisolated func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
         let items = completer.results
-        Task { @MainActor in self.results = items }
+        Task { @MainActor in
+            self.results = items
+            self.failed = false
+        }
     }
 
     nonisolated func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
-        Task { @MainActor in self.results = [] }
+        Task { @MainActor in
+            self.results = []
+            self.failed = true
+        }
     }
 }

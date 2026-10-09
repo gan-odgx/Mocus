@@ -8,7 +8,6 @@
 "Spoofing" = "Байршил солигдсон";
 "Reconnecting…" = "Дахин холбогдож байна…";
 "Disconnected" = "Холболт тасарсан";
-"Disconnected — %@" = "Холболт тасарсан — %@";
 "Not Spoofing" = "Идэвхгүй";
 "Connect LocalDevVPN" = "LocalDevVPN холбох";
 "Connect with mobile data" = "Мобайл датаар холбох";
@@ -44,9 +43,7 @@
 "Not connected yet" = "Холбогдоогүй байна";
 "Mobile data and LocalDevVPN must be on while you connect." = "Холбогдох үед мобайл дата болон LocalDevVPN асаалттай байх ёстой.";
 "Connected" = "Холбогдсон";
-"Now turn mobile data off in Control Center." = "Одоо Control Center-ээс мобайл датагаа унтраана уу.";
 "Ready to teleport" = "Телепорт хийхэд бэлэн";
-"Drop a pin on the map and tap Teleport. Stop keeps the connection, so you can teleport again without data." = "Газрын зураг дээр цэг тавиад «Телепорт» дарна уу. «Зогсоох» дарахад холболт хадгалагдах тул датагүйгээр дахин телепорт хийж болно.";
 "Done" = "Болсон";
 "Disconnect" = "Салгах";
 "If the connection drops, turn data on briefly and tap Connect again." = "Холболт тасарвал датагаа түр асаагаад «Холбох»-ыг дахин дарна уу.";
@@ -199,3 +196,20 @@
 
 /* MARK: - Easter egg */
 "close enough" = "бараг л таарлаа";
+
+/* MARK: - v1.2 reliability and safety */
+"LocalDevVPN is off. Turn it on, then try again." = "LocalDevVPN унтраалттай байна. Асаагаад дахин оролдоно уу.";
+"This iPhone rejected the pairing file. It may be out of date after an iOS update: pair again in Settings." = "Энэ iPhone хослуулах файлыг хүлээж авсангүй. iOS шинэчлэгдсэний дараа хүчингүй болсон байж магадгүй: Тохиргоо хэсэгт дахин хослуулна уу.";
+"Couldn't turn the simulated location off before disconnecting. Restart the iPhone to get your real location back." = "Салгахаас өмнө тохируулсан байршлыг унтрааж чадсангүй. Жинхэнэ байршлаа буцаахын тулд iPhone-оо дахин асаана уу.";
+"Couldn't reach the iPhone to turn the simulated location off. Mocus turns it off as soon as the connection is back, or restart the iPhone." = "Тохируулсан байршлыг унтраахын тулд iPhone-д холбогдож чадсангүй. Холболт сэргэмэгц Mocus үүнийг унтраана, эсвэл iPhone-оо дахин асаана уу.";
+"No internet: the map and search may not load. Use saved places." = "Интернэт алга: газрын зураг, хайлт ачаалахгүй байж магадгүй. Хадгалсан газруудаа ашиглана уу.";
+"Search needs internet." = "Хайлтад интернэт хэрэгтэй.";
+"Couldn't load that place. Search needs internet." = "Тэр газрыг ачаалж чадсангүй. Хайлтад интернэт хэрэгтэй.";
+"Replace the pairing file?" = "Хослуулах файлыг солих уу?";
+"Replace" = "Солих";
+"This replaces the pairing file Mocus uses now. On iOS 18–26 you need a computer to make a new one." = "Энэ нь Mocus-ийн одоо ашиглаж буй хослуулах файлыг солино. iOS 18–26 дээр шинийг үүсгэхэд компьютер хэрэгтэй.";
+"Remove the pairing file?" = "Хослуулах файлыг устгах уу?";
+"Remove" = "Устгах";
+"Mocus can't change your location until you pair again. On iOS 18–26 that needs a computer." = "Дахин хослуулах хүртэл Mocus байршил сольж чадахгүй. iOS 18–26 дээр үүнд компьютер хэрэгтэй.";
+"Pick your destinations now and star them (★): the map and search need data. Then turn mobile data off in Control Center." = "Очих газруудаа одоо сонгоод одоор (★) тэмдэглэнэ үү: газрын зураг, хайлтад дата хэрэгтэй. Дараа нь Control Center-ээс мобайл датагаа унтраана уу.";
+"Open saved places (★) and tap one to teleport. The map may stay blank without data. Stop keeps the connection, so you can teleport again without data." = "Хадгалсан газруудаа (★) нээгээд нэгийг нь дарж телепорт хийнэ үү. Датагүй үед газрын зураг хоосон харагдаж болно. «Зогсоох» дарахад холболт хадгалагдах тул датагүйгээр дахин телепорт хийж болно.";

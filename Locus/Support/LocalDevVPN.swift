@@ -51,11 +51,12 @@ enum LocalDevVPN {
         var ptr: UnsafeMutablePointer<ifaddrs>? = first
         while let current = ptr {
             let interface = current.pointee
-            if interface.ifa_addr.pointee.sa_family == UInt8(AF_INET) {
+            // Some interfaces (e.g. a VPN mid-teardown) have no address; this is polled every second or two.
+            if let addr = interface.ifa_addr, addr.pointee.sa_family == UInt8(AF_INET) {
                 var host = [CChar](repeating: 0, count: Int(NI_MAXHOST))
                 let nameLen = socklen_t(MemoryLayout<sockaddr_in>.size)
                 if getnameinfo(
-                    interface.ifa_addr,
+                    addr,
                     nameLen,
                     &host,
                     socklen_t(host.count),

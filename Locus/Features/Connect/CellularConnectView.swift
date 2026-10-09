@@ -116,7 +116,7 @@ struct CellularConnectView: View {
                 Text("Connected")
                     .font(.title3.weight(.bold))
                     .foregroundStyle(.primary)
-                Text("Now turn mobile data off in Control Center.")
+                Text("Pick your destinations now and star them (★): the map and search need data. Then turn mobile data off in Control Center.")
             } else {
                 Image(systemName: "location.north.circle.fill")
                     .font(.largeTitle)
@@ -124,7 +124,7 @@ struct CellularConnectView: View {
                 Text("Ready to teleport")
                     .font(.title3.weight(.bold))
                     .foregroundStyle(.primary)
-                Text("Drop a pin on the map and tap Teleport. Stop keeps the connection, so you can teleport again without data.")
+                Text("Open saved places (★) and tap one to teleport. The map may stay blank without data. Stop keeps the connection, so you can teleport again without data.")
             }
         }
         .font(.subheadline)

@@ -71,7 +71,7 @@
 			<key>CFBundleTypeName</key>
 			<string>Pairing File</string>
 			<key>LSHandlerRank</key>
-			<string>Owner</string>
+			<string>Alternate</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>com.apple.property-list</string>

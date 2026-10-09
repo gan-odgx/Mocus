@@ -1,0 +1,15 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <path d="M190 590 C250 494 380 422 512 414 C644 422 774 494 834 590 Z" fill="#FFFFFF"/>
+  <line x1="444.2" y1="423.7" x2="226" y2="590" stroke="#B8322A" stroke-opacity="0.22" stroke-width="9" stroke-linecap="butt"/>
+  <line x1="470.0" y1="418.8" x2="316" y2="590" stroke="#B8322A" stroke-opacity="0.22" stroke-width="9" stroke-linecap="butt"/>
+  <line x1="491.9" y1="415.7" x2="412" y2="590" stroke="#B8322A" stroke-opacity="0.22" stroke-width="9" stroke-linecap="butt"/>
+  <line x1="512.0" y1="414.1" x2="512" y2="590" stroke="#B8322A" stroke-opacity="0.22" stroke-width="9" stroke-linecap="butt"/>
+  <line x1="532.0" y1="415.7" x2="612" y2="590" stroke="#B8322A" stroke-opacity="0.22" stroke-width="9" stroke-linecap="butt"/>
+  <line x1="554.0" y1="418.8" x2="708" y2="590" stroke="#B8322A" stroke-opacity="0.22" stroke-width="9" stroke-linecap="butt"/>
+  <line x1="579.8" y1="423.7" x2="798" y2="590" stroke="#B8322A" stroke-opacity="0.22" stroke-width="9" stroke-linecap="butt"/>
+  <path d="M236 608 H788 V740 Q788 760 768 760 H256 Q236 760 236 740 Z" fill="#FFFFFF"/>
+  <rect x="236" y="636" width="552" height="10" fill="#B8322A" fill-opacity="0.22"/>
+  <path d="M467 760 V666 Q467 652 481 652 H543 Q557 652 557 666 V760 Z" fill="#F6C343"/>
+  <circle cx="512" cy="372" r="66" fill="#F6C343"/>
+  <circle cx="512" cy="372" r="23" fill="#B8322A"/>
+</svg>

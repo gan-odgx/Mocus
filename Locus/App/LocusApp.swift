@@ -36,6 +36,25 @@ struct LocusApp: App {
             .onOpenURL { url in
                 handleIncoming(url)
             }
+            .confirmationDialog(
+                "Replace the pairing file?",
+                isPresented: Binding(
+                    get: { pairing.pendingReplacement != nil },
+                    set: { if !$0 { pairing.cancelReplacement() } }
+                ),
+                titleVisibility: .visible
+            ) {
+                Button("Replace", role: .destructive) {
+                    do {
+                        try pairing.confirmReplacement()
+                    } catch {
+                        session.lastError = error.localizedDescription
+                    }
+                }
+                Button("Cancel", role: .cancel) { pairing.cancelReplacement() }
+            } message: {
+                Text("This replaces the pairing file Mocus uses now. On iOS 18–26 you need a computer to make a new one.")
+            }
             .onAppear {
                 if !setupComplete, pairing.hasPairingFile, !SetupGate.isInProgress {
                     SetupGate.markComplete()
@@ -48,7 +67,12 @@ struct LocusApp: App {
     private func handleIncoming(_ url: URL) {
         let ext = url.pathExtension.lowercased()
         if ["plist", "mobiledevicepairing", "mobiledevicepair"].contains(ext) {
-            try? pairing.importPairing(from: url)
+            do {
+                try pairing.importPairing(from: url)
+            } catch {
+                // Opened from AirDrop / Files: say why it didn't take instead of failing silently.
+                session.lastError = error.localizedDescription
+            }
         } else if ext == "gpx" {
             NotificationCenter.default.post(name: .locusImportGPX, object: url)
         }

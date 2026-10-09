@@ -12,6 +12,7 @@ struct SettingsView: View {
     @State private var tunnelIP = TunnelConfig.targetIP
     @State private var localDevVPNInstalled = LocalDevVPN.isInstalled
     @State private var showCellularConnect = false
+    @State private var confirmRemovePairing = false
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(ConnectionMode.defaultsKey) private var connectionMode: ConnectionMode = .wifi
     @AppStorage(AppLanguage.defaultsKey) private var language: AppLanguage = .mn
@@ -68,7 +69,7 @@ struct SettingsView: View {
                     }
                     if pairing.hasPairingFile {
                         Button("Remove pairing file", role: .destructive) {
-                            try? pairing.removePairing()
+                            confirmRemovePairing = true
                         }
                     }
                 } header: {
@@ -206,6 +207,14 @@ struct SettingsView: View {
             }
             .onAppear {
                 localDevVPNInstalled = LocalDevVPN.isInstalled
+            }
+            .confirmationDialog("Remove the pairing file?", isPresented: $confirmRemovePairing, titleVisibility: .visible) {
+                Button("Remove", role: .destructive) {
+                    try? pairing.removePairing()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Mocus can't change your location until you pair again. On iOS 18–26 that needs a computer.")
             }
             .onChange(of: language) { _, newValue in
                 AppLanguage.apply(newValue)
