@@ -1,4 +1,10 @@
-# Locus
+# Mocus
+
+> **Mongolian edition** of [ChrisMack32/Locus](https://github.com/ChrisMack32/Locus): Mongolian UI (switchable to English in Settings) and a **Mobile data** connection mode, so you can start teleporting without Wi‑Fi. Монгол заавар: [README.mn.md](README.mn.md).
+>
+> **Mobile data mode:** Settings → Connection mode → *Mobile data*. With Wi‑Fi off and mobile data on, connect LocalDevVPN and tap **Connect**. Then turn mobile data off and teleport as usual. **Stop** keeps the tunnel open, so you can teleport again without data. If it drops, turn data on briefly and tap **Connect** again.
+>
+> **Build without a Mac:** push to GitHub and the [Build IPA](.github/workflows/build-ipa.yml) workflow produces an unsigned `Mocus.ipa` on GitHub's macOS runners.
 
 Free and open-source iPhone location teleport. Tap the map, search a place, or drive a route — Locus injects coordinates through Apple’s **developer location service** into `locationd`, so Maps and other apps see the spoofed GPS (not just a Wi‑Fi lookup that outdoor GPS will overwrite).
 

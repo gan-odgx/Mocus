@@ -1,0 +1,5 @@
+/* Mocus — iOS-ийн зөвшөөрлийн цонхнуудын монгол текст. */
+"CFBundleDisplayName" = "Mocus";
+"NSLocationWhenInUseUsageDescription" = "Mocus таны жинхэнэ байршлыг ашиглан газрын зургийг чиглүүлж, телепортын дараа буцах боломж олгоно.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Mocus дэвсгэрт байршлын хөнгөн сешн ажиллуулж, тохируулсан GPS-ийг идэвхтэй байлгана.";
+"NSLocalNetworkUsageDescription" = "Mocus дотоод сүлжээг ашиглан хослуулах хост болж зарлагдах (iOS 27), мөн GPS солихын тулд хөгжүүлэгчийн туннельд (LocalDevVPN) холбогдоно.";

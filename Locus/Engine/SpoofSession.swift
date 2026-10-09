@@ -78,6 +78,9 @@ final class SpoofSession: ObservableObject {
     @Published var lastError: String?
     @Published var isBusy = false
     @Published var joystickActive = false
+    /// Tunnel open (spoofing or not). Mobile-data mode shows this as "ready".
+    @Published private(set) var tunnelReady = false
+    @Published var showCellularConnect = false
 
     @Published var favorites: [SavedPlace] = []
     @Published var recents: [SavedPlace] = []
@@ -106,11 +109,54 @@ final class SpoofSession: ObservableObject {
 
     func teleport(to coordinate: CLLocationCoordinate2D, pairing: PairingStore) {
         guard pairing.hasPairingFile else {
-            lastError = "Import an RPPairing file in Settings first."
+            lastError = String(localized: "Import an RPPairing file in Settings first.", bundle: .appLanguage)
             return
         }
         pin = coordinate
         apply(coordinate, pairing: pairing, markRecent: true)
+    }
+
+    /// Mobile-data mode: open the tunnel while data is on, without moving the GPS.
+    func connectTunnel(pairing: PairingStore) {
+        guard pairing.hasPairingFile else {
+            lastError = String(localized: "Import an RPPairing file in Settings first.", bundle: .appLanguage)
+            return
+        }
+        guard !isBusy else { return }
+        isBusy = true
+        let path = pairing.pairingPath
+        let ip = TunnelConfig.targetIP
+        Task {
+            let result = await Task.detached { LocationEngine.connect(pairingPath: path, deviceIP: ip) }.value
+            isBusy = false
+            switch result {
+            case .success:
+                tunnelReady = true
+                lastError = nil
+                // Stay alive while the user leaves to turn data off.
+                beginBackground()
+                locationKeeper.start()
+                // Reconnecting after a drop puts the last spoof back.
+                if status.isDropped, let sim = simulated {
+                    apply(sim, pairing: pairing, markRecent: false)
+                }
+            case .failure(let error):
+                tunnelReady = false
+                lastError = error.localizedDescription
+            }
+        }
+    }
+
+    /// Clears any spoof and closes the tunnel; the next teleport needs a network again.
+    func disconnectTunnel(pairing: PairingStore) {
+        if simulated != nil {
+            stop(pairing: pairing)
+        }
+        LocationEngine.disconnect()
+        tunnelReady = false
+        if !status.isDropped {
+            endBackground()
+        }
     }
 
     func stop(pairing: PairingStore) {
@@ -120,18 +166,22 @@ final class SpoofSession: ObservableObject {
         stopResend()
         stopHealth()
         isBusy = true
-        let result = LocationEngine.clear()
+        let result = LocationEngine.clear(keepSession: ConnectionMode.current == .cellular)
         isBusy = false
         switch result {
         case .success:
             simulated = nil
             status = .idle
-            endBackground()
+            tunnelReady = LocationEngine.isSessionActive
+            if !tunnelReady {
+                endBackground()
+            }
             // Keep location updates running so the map puck / locate button
             // can return to the real GPS fix (not the leftover pin).
             locationKeeper.start()
         case .failure(let error):
             lastError = error.localizedDescription
+            tunnelReady = LocationEngine.isSessionActive
             status = .dropped(error.localizedDescription)
             postDropNotification(error.localizedDescription)
         }
@@ -149,12 +199,12 @@ final class SpoofSession: ObservableObject {
 
     func startJoystick(pairing: PairingStore) {
         guard pairing.hasPairingFile else {
-            lastError = "Import an RPPairing file in Settings first."
+            lastError = String(localized: "Import an RPPairing file in Settings first.", bundle: .appLanguage)
             return
         }
         let start = simulated ?? pin ?? locationKeeper.lastKnownCoordinate
         guard let start else {
-            lastError = "Drop a pin or teleport somewhere before using the joystick."
+            lastError = String(localized: "Drop a pin or teleport somewhere before using the joystick.", bundle: .appLanguage)
             return
         }
         if simulated == nil {
@@ -304,6 +354,7 @@ final class SpoofSession: ObservableObject {
             simulated = coordinate
             pin = coordinate
             status = .active
+            tunnelReady = true
             lastError = nil
             beginBackground()
             locationKeeper.start()
@@ -314,6 +365,7 @@ final class SpoofSession: ObservableObject {
             }
         case .failure(let error):
             lastError = error.localizedDescription
+            tunnelReady = LocationEngine.isSessionActive
             if simulated != nil {
                 status = .dropped(error.localizedDescription)
                 postDropNotification(error.localizedDescription)
@@ -361,6 +413,16 @@ final class SpoofSession: ObservableObject {
         healthTimer = Timer.scheduledTimer(withTimeInterval: 12, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 guard let self, let sim = self.simulated else { return }
+                // Mobile-data mode can't reopen the tunnel with data off, so don't
+                // retry (and re-notify) every tick; wait for the user to tap Connect.
+                if ConnectionMode.current == .cellular, self.status.isDropped {
+                    if LocationEngine.isSessionActive {
+                        // The 8 s resend got through after data came back.
+                        self.status = .active
+                        self.tunnelReady = true
+                    }
+                    return
+                }
                 if case .dropped = self.status {
                     self.status = .reconnecting
                     self.apply(sim, pairing: pairing, markRecent: false)
@@ -415,7 +477,7 @@ final class SpoofSession: ObservableObject {
     private func postDropNotification(_ message: String) {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
         let content = UNMutableNotificationContent()
-        content.title = "Locus spoof dropped"
+        content.title = String(localized: "Mocus spoof dropped", bundle: .appLanguage)
         content.body = message
         content.sound = .default
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)

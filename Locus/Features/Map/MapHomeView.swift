@@ -313,7 +313,8 @@ struct MapHomeView: View {
                 position = .userLocation(
                     followsHeading: false,
                     fallback: .region(MKCoordinateRegion(
-                        center: CLLocationCoordinate2D(latitude: 37.3349, longitude: -122.0090),
+                        // Sükhbaatar Square, Ulaanbaatar
+                        center: CLLocationCoordinate2D(latitude: 47.9189, longitude: 106.9176),
                         latitudinalMeters: 2000,
                         longitudinalMeters: 2000
                     ))
@@ -357,7 +358,7 @@ struct MapHomeView: View {
     private func buildRoadRoute() {
         guard let start = routeStart ?? session.simulated ?? session.pin,
               let end = routeEnd else {
-            session.lastError = "Set a route start and end."
+            session.lastError = String(localized: "Set a route start and end.", bundle: .appLanguage)
             return
         }
         isRouting = true
@@ -380,7 +381,7 @@ struct MapHomeView: View {
     private func playRoute() {
         let path = routeCoords.isEmpty ? drawnPath : routeCoords
         guard path.count >= 2 else {
-            session.lastError = "Build or draw a route first."
+            session.lastError = String(localized: "Build or draw a route first.", bundle: .appLanguage)
             return
         }
         showRouteSheet = false
@@ -403,11 +404,11 @@ struct MapHomeView: View {
     private func exportGPX() {
         let path = routeCoords.isEmpty ? drawnPath : routeCoords
         guard !path.isEmpty else {
-            session.lastError = "Nothing to export."
+            session.lastError = String(localized: "Nothing to export.", bundle: .appLanguage)
             return
         }
         let gpx = GPXCodec.export(path)
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("Locus-Route.gpx")
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("Mocus-Route.gpx")
         do {
             try gpx.data(using: .utf8)?.write(to: url)
             let av = UIActivityViewController(activityItems: [url], applicationActivities: nil)

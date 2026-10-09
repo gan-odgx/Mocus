@@ -5,6 +5,12 @@ struct LocusApp: App {
     @StateObject private var session = SpoofSession()
     @StateObject private var pairing = PairingStore()
     @AppStorage(SetupGate.defaultsKey) private var setupComplete = false
+    @AppStorage(AppLanguage.defaultsKey) private var language: AppLanguage = .mn
+
+    init() {
+        // Before any UI loads, so the bundle and system prompts pick the right .lproj.
+        AppLanguage.apply(AppLanguage.current)
+    }
 
     /// Map when setup finished, or when already paired outside this walkthrough.
     private var showMap: Bool {
@@ -25,6 +31,7 @@ struct LocusApp: App {
             }
             .environmentObject(session)
             .environmentObject(pairing)
+            .environment(\.locale, Locale(identifier: language.rawValue))
             .preferredColorScheme(.dark)
             .onOpenURL { url in
                 handleIncoming(url)

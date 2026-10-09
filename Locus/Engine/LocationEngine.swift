@@ -13,14 +13,18 @@ enum LocationEngineError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .invalidIP: return "Tunnel IP is invalid. Check Settings → Tunnel IP (usually 10.7.0.1)."
-        case .pairingRead: return "Could not read the RPPairing file. Generate one with idevice_pair in RPPairing mode."
-        case .tunnelCreate: return "Could not open the developer tunnel. Is LocalDevVPN connected on Wi‑Fi?"
-        case .remoteServer: return "Connected to the tunnel but RemoteXPC handshake failed."
-        case .simulationCreate: return "Could not open Apple’s location simulation service."
-        case .locationSet: return "Failed to set simulated coordinates."
-        case .locationClear: return "Failed to clear simulated location."
-        case .notActive: return "No active simulation session."
+        case .invalidIP: return String(localized: "Tunnel IP is invalid. Check Settings → Tunnel IP (usually 10.7.0.1).", bundle: .appLanguage)
+        case .pairingRead: return String(localized: "Could not read the RPPairing file. Generate one with idevice_pair in RPPairing mode.", bundle: .appLanguage)
+        case .tunnelCreate:
+            if ConnectionMode.current == .cellular {
+                return String(localized: "Could not open the developer tunnel. Turn mobile data on, check LocalDevVPN is connected, then tap Connect again.", bundle: .appLanguage)
+            }
+            return String(localized: "Could not open the developer tunnel. Is LocalDevVPN connected on Wi‑Fi?", bundle: .appLanguage)
+        case .remoteServer: return String(localized: "Connected to the tunnel but RemoteXPC handshake failed.", bundle: .appLanguage)
+        case .simulationCreate: return String(localized: "Could not open Apple’s location simulation service.", bundle: .appLanguage)
+        case .locationSet: return String(localized: "Failed to set simulated coordinates.", bundle: .appLanguage)
+        case .locationClear: return String(localized: "Failed to clear simulated location.", bundle: .appLanguage)
+        case .notActive: return String(localized: "No active simulation session.", bundle: .appLanguage)
         }
     }
 
@@ -67,13 +71,29 @@ enum LocationEngine {
         return result
     }
 
-    static func clear() -> Result<Void, LocationEngineError> {
-        var result: Result<Void, LocationEngineError> = .failure(.notActive)
+    /// Opens the tunnel and location service without moving the GPS. Mobile-data
+    /// mode calls this while data is on; the open session survives data going off.
+    static func connect(pairingPath: String, deviceIP: String) -> Result<Void, LocationEngineError> {
+        var result: Result<Void, LocationEngineError> = .failure(.tunnelCreate)
         queue.sync {
-            let code = clearLocked()
+            let code = locationSimulation != nil ? ok : openLocked(pairingPath: pairingPath, deviceIP: deviceIP)
             result = code == ok ? .success(()) : .failure(.from(code: code))
         }
         return result
+    }
+
+    /// `keepSession` leaves the tunnel open so the next teleport needs no network.
+    static func clear(keepSession: Bool = false) -> Result<Void, LocationEngineError> {
+        var result: Result<Void, LocationEngineError> = .failure(.notActive)
+        queue.sync {
+            let code = clearLocked(keepSession: keepSession)
+            result = code == ok ? .success(()) : .failure(.from(code: code))
+        }
+        return result
+    }
+
+    static func disconnect() {
+        queue.sync { cleanup() }
     }
 
     private static func cleanup() {
@@ -105,6 +125,19 @@ enum LocationEngine {
             }
         }
 
+        let openCode = openLocked(pairingPath: pairingPath, deviceIP: deviceIP)
+        guard openCode == ok else { return openCode }
+
+        if let setError = location_simulation_set(locationSimulation, latitude, longitude) {
+            idevice_error_free(setError)
+            cleanup()
+            return locationSet
+        }
+        return ok
+    }
+
+    /// Tunnel → RemoteXPC → location simulation service. Leaves `locationSimulation` set on success.
+    private static func openLocked(pairingPath: String, deviceIP: String) -> Int32 {
         var address = sockaddr_in()
         address.sin_family = sa_family_t(AF_INET)
         address.sin_port = in_port_t(49152).bigEndian
@@ -152,23 +185,18 @@ enum LocationEngine {
         }
         // location_simulation_new consumes/owns remote server lifecycle alongside handle
         remoteServer = nil
-
-        if let setError = location_simulation_set(locationSimulation, latitude, longitude) {
-            idevice_error_free(setError)
-            cleanup()
-            return locationSet
-        }
         return ok
     }
 
-    private static func clearLocked() -> Int32 {
+    private static func clearLocked(keepSession: Bool) -> Int32 {
         guard let locationSimulation else { return locationClear }
         let err = location_simulation_clear(locationSimulation)
-        cleanup()
         if let err {
             idevice_error_free(err)
+            cleanup()
             return locationClear
         }
+        if !keepSession { cleanup() }
         return ok
     }
 }

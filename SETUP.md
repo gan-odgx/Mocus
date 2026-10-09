@@ -40,3 +40,14 @@ Install [LocalDevVPN](https://apps.apple.com/us/app/localdevvpn/id6755608044), c
 ## 4. Teleport
 
 On Wi‑Fi: drop a pin → **Teleport**. Then joystick / routes / GPX work; the session can continue on cellular.
+
+### No Wi‑Fi: Mobile data mode
+
+1. Mocus → **Settings → Connection mode → Mobile data**.
+2. Turn **Wi‑Fi off** and **mobile data on**.
+3. Connect **LocalDevVPN**.
+4. Tap the status bar on the map (**Connect with mobile data**) → **Connect**.
+5. Turn **mobile data off** (Control Center).
+6. Drop a pin → **Teleport**. **Stop** keeps the connection, so you can teleport again without data.
+
+If the connection drops, turn data on briefly and tap **Connect** again; the last spoofed spot is restored.

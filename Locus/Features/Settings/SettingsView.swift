@@ -11,7 +11,10 @@ struct SettingsView: View {
     @State private var showNameEasterEgg = false
     @State private var tunnelIP = TunnelConfig.targetIP
     @State private var localDevVPNInstalled = LocalDevVPN.isInstalled
+    @State private var showCellularConnect = false
     @Environment(\.scenePhase) private var scenePhase
+    @AppStorage(ConnectionMode.defaultsKey) private var connectionMode: ConnectionMode = .wifi
+    @AppStorage(AppLanguage.defaultsKey) private var language: AppLanguage = .mn
 
     private var supportsOnDevicePairing: Bool {
         if #available(iOS 27.0, *) { return true }
@@ -27,6 +30,18 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    Picker(selection: $language) {
+                        ForEach(AppLanguage.allCases) { lang in
+                            Text(verbatim: lang.name).tag(lang)
+                        }
+                    } label: {
+                        Text(verbatim: "Хэл · Language")
+                    }
+                } footer: {
+                    Text("Some system text switches after you reopen the app.")
+                }
+
                 Section {
                     Label {
                         Text(pairing.hasPairingFile ? "RPPairing file installed" : "No pairing file")
@@ -60,8 +75,8 @@ struct SettingsView: View {
                     Text("Developer pairing")
                 } footer: {
                     Text(supportsOnDevicePairing
-                         ? "On iOS 27, use Pair on this iPhone — no computer. Locus advertises a pairable host; confirm the 6-digit code under Settings › Privacy & Security › Developer Mode › Pair with Host. On older iOS, import an RPPairing file from idevice_pair (not a SideStore lockdown .mobiledevicepairing). LiveContainer: enable Fix File Picker on Locus, or use Paste / Share → LiveContainer → Locus."
-                         : "Import an RPPairing file from idevice_pair (not a SideStore lockdown .mobiledevicepairing). If the file picker fails (common in LiveContainer), enable Fix File Picker on the app, share the file into LiveContainer → Locus, or copy the plist and use Paste.")
+                         ? "On iOS 27, use Pair on this iPhone — no computer. Mocus advertises a pairable host; confirm the 6-digit code under Settings › Privacy & Security › Developer Mode › Pair with Host. On older iOS, import an RPPairing file from idevice_pair (not a SideStore lockdown .mobiledevicepairing). LiveContainer: enable Fix File Picker on Mocus, or use Paste / Share → LiveContainer → Mocus."
+                         : "Import an RPPairing file from idevice_pair (not a SideStore lockdown .mobiledevicepairing). If the file picker fails (common in LiveContainer), enable Fix File Picker on the app, share the file into LiveContainer → Mocus, or copy the plist and use Paste.")
                 }
 
                 Section {
@@ -93,7 +108,32 @@ struct SettingsView: View {
                 } header: {
                     Text("Tunnel")
                 } footer: {
-                    Text("Connect LocalDevVPN before teleporting. Default tunnel IP is 10.7.0.1. Start a spoof on Wi‑Fi first; it can keep working on cellular afterward.")
+                    Text("Connect LocalDevVPN before teleporting. Default tunnel IP is 10.7.0.1.")
+                }
+
+                Section {
+                    Picker("Connection", selection: $connectionMode) {
+                        Text("Wi‑Fi").tag(ConnectionMode.wifi)
+                        Text("Mobile data").tag(ConnectionMode.cellular)
+                    }
+                    .pickerStyle(.segmented)
+
+                    if connectionMode == .cellular {
+                        Button {
+                            showCellularConnect = true
+                        } label: {
+                            Label(
+                                session.tunnelReady ? "Connected — ready to teleport" : "Connect with mobile data",
+                                systemImage: "antenna.radiowaves.left.and.right"
+                            )
+                        }
+                    }
+                } header: {
+                    Text("Connection mode")
+                } footer: {
+                    Text(connectionMode == .cellular
+                         ? "No Wi‑Fi needed: with Wi‑Fi off, turn mobile data on, connect LocalDevVPN and tap Connect. Then turn data off and teleport. Stop keeps the connection open."
+                         : "Start your first teleport on Wi‑Fi. It can keep working on cellular afterward.")
                 }
 
                 Section("Privacy") {
@@ -105,7 +145,10 @@ struct SettingsView: View {
                 Section("About") {
                     LabeledContent("Version", value: appVersion)
                     LabeledContent("Engine", value: "idevice DVT location simulation")
-                    Text("Locus is free and open source (MIT). Location injection uses the MIT-licensed idevice FFI.")
+                    Text("Mocus is free and open source (MIT). Location injection uses the MIT-licensed idevice FFI.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Text("Mongolian edition, based on ChrisMack32/Locus.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -156,8 +199,16 @@ struct SettingsView: View {
             .fullScreenCover(isPresented: $showNameEasterEgg) {
                 LocusEasterEggView()
             }
+            .sheet(isPresented: $showCellularConnect) {
+                CellularConnectView()
+                    .environmentObject(session)
+                    .environmentObject(pairing)
+            }
             .onAppear {
                 localDevVPNInstalled = LocalDevVPN.isInstalled
+            }
+            .onChange(of: language) { _, newValue in
+                AppLanguage.apply(newValue)
             }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active {

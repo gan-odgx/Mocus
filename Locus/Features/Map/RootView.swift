@@ -26,7 +26,12 @@ struct RootView: View {
         .sheet(isPresented: $showPlaces) {
             PlacesView()
         }
-        .alert("Locus", isPresented: Binding(
+        .sheet(isPresented: $session.showCellularConnect) {
+            CellularConnectView()
+                .environmentObject(session)
+                .environmentObject(pairing)
+        }
+        .alert("Mocus", isPresented: Binding(
             get: { session.lastError != nil },
             set: { if !$0 { session.lastError = nil } }
         )) {
@@ -40,27 +45,35 @@ struct RootView: View {
 struct StatusBarView: View {
     @EnvironmentObject private var session: SpoofSession
     @Environment(\.scenePhase) private var scenePhase
+    @AppStorage(ConnectionMode.defaultsKey) private var connectionMode: ConnectionMode = .wifi
 
     @State private var tunnelConnected = LocalDevVPN.isConnected
 
     private enum Display {
         case notSpoofing
         case connectVPN
+        case connectCellular
+        case cellularReady
         case status(String)
     }
 
     private var display: Display {
         switch session.status {
         case .idle:
+            if connectionMode == .cellular {
+                return session.tunnelReady ? .cellularReady : .connectCellular
+            }
             return tunnelConnected ? .notSpoofing : .connectVPN
         case .connecting:
-            return .status("Connecting…")
+            return .status(String(localized: "Connecting…", bundle: .appLanguage))
         case .active:
-            return .status("Spoofing")
+            return .status(String(localized: "Spoofing", bundle: .appLanguage))
         case .reconnecting:
-            return .status("Reconnecting…")
+            return .status(String(localized: "Reconnecting…", bundle: .appLanguage))
         case .dropped(let reason):
-            return .status(reason.isEmpty ? "Disconnected" : "Disconnected — \(reason)")
+            return .status(reason.isEmpty
+                ? String(localized: "Disconnected", bundle: .appLanguage)
+                : String(localized: "Disconnected — \(reason)", bundle: .appLanguage))
         }
     }
 
@@ -68,8 +81,10 @@ struct StatusBarView: View {
         switch display {
         case .notSpoofing:
             return Color.primary.opacity(0.55)
-        case .connectVPN:
+        case .connectVPN, .connectCellular:
             return LocusTheme.statusWarn
+        case .cellularReady:
+            return LocusTheme.statusGood
         case .status:
             switch session.status {
             case .active: return LocusTheme.statusGood
@@ -82,15 +97,25 @@ struct StatusBarView: View {
 
     private var title: String {
         switch display {
-        case .notSpoofing: return "Not Spoofing"
-        case .connectVPN: return "Connect LocalDevVPN"
+        case .notSpoofing: return String(localized: "Not Spoofing", bundle: .appLanguage)
+        case .connectVPN: return String(localized: "Connect LocalDevVPN", bundle: .appLanguage)
+        case .connectCellular: return String(localized: "Connect with mobile data", bundle: .appLanguage)
+        case .cellularReady: return String(localized: "Connected — ready to teleport", bundle: .appLanguage)
         case .status(let text): return text
         }
     }
 
     var body: some View {
         Group {
-            if case .connectVPN = display {
+            if connectionMode == .cellular {
+                // Any state opens the checklist: connect, reconnect after a drop, or disconnect.
+                Button {
+                    session.showCellularConnect = true
+                } label: {
+                    statusContent
+                }
+                .buttonStyle(.plain)
+            } else if case .connectVPN = display {
                 Button(action: LocalDevVPN.openOrInstall) {
                     statusContent
                 }
@@ -142,6 +167,10 @@ struct StatusBarView: View {
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
+            } else if connectionMode == .cellular {
+                Image(systemName: "antenna.radiowaves.left.and.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(LocusTheme.accent)
             }
         }
         .padding(.horizontal, 14)
@@ -208,6 +237,7 @@ struct BottomControlsView: View {
                         Image(systemName: "dot.circle.and.hand.point.up.left.fill")
                         Text(session.joystickActive ? "On" : "Joy")
                             .lineLimit(1)
+                            .minimumScaleFactor(0.7)
                     }
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(session.joystickActive ? .black : .primary)
@@ -237,7 +267,7 @@ struct BottomControlsView: View {
                 } else {
                     Button {
                         guard let pin = session.pin else {
-                            session.lastError = "Tap the map to drop a pin first."
+                            session.lastError = String(localized: "Tap the map to drop a pin first.", bundle: .appLanguage)
                             return
                         }
                         session.teleport(to: pin, pairing: pairing)

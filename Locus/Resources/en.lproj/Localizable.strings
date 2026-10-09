@@ -1,0 +1,3 @@
+/* English uses the source strings in code as-is. This table exists so the
+   bundle offers an "en" localization next to "mn" (see AppLanguage). */
+"OK" = "OK";

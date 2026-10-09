@@ -77,7 +77,7 @@ struct PairOnDeviceView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("No computer needed")
                 .font(.title2.weight(.bold))
-            Text("Locus advertises a pairable host. iOS connects from Developer Mode, then Locus shows a 6-digit code for you to type.")
+            Text("Mocus advertises a pairable host. iOS connects from Developer Mode, then Mocus shows a 6-digit code for you to type.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -87,7 +87,7 @@ struct PairOnDeviceView: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Follow these steps")
                 .font(.headline)
-            Text("Keep Locus open. You’ll leave briefly for Settings, then come back with a code.")
+            Text("Keep Mocus open. You’ll leave briefly for Settings, then come back with a code.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -97,15 +97,15 @@ struct PairOnDeviceView: View {
         VStack(alignment: .leading, spacing: 12) {
             step(1, "Tap Start pairing and allow Local Network + Location when asked.")
             step(2, "Allow notifications — the code can appear as a banner over Settings.")
-            step(3, "Open Settings › Privacy & Security › Developer Mode › Pair with Locus → Pair.")
-            step(4, "Enter your unlock passcode first. On the next prompt, type Locus’s 6-digit code.")
+            step(3, "Open Settings › Privacy & Security › Developer Mode › Pair with Mocus → Pair.")
+            step(4, "Enter your unlock passcode first. On the next prompt, type Mocus’s 6-digit code.")
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .locusGlass(.regular, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
-    private func step(_ n: Int, _ text: String) -> some View {
+    private func step(_ n: Int, _ text: LocalizedStringKey) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Text("\(n)")
                 .font(.caption.weight(.bold))
@@ -123,7 +123,7 @@ struct PairOnDeviceView: View {
             Label("If the code isn’t here yet", systemImage: "lightbulb.fill")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(LocusTheme.accentSecondary)
-            Text("Keep the app listening while you confirm in Developer Mode. Don’t force-quit. If “Pair with Locus” vanishes, stop/start pairing and reopen Developer Mode.")
+            Text("Keep the app listening while you confirm in Developer Mode. Don’t force-quit. If “Pair with Mocus” vanishes, stop/start pairing and reopen Developer Mode.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -143,7 +143,7 @@ struct PairOnDeviceView: View {
                 ProgressView()
                 Text("Waiting for Settings…")
                     .font(.headline)
-                Text("In Developer Mode tap Pair with Locus → Pair.")
+                Text("In Developer Mode tap Pair with Mocus → Pair.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -197,6 +197,14 @@ struct PairOnDeviceView: View {
         .locusGlass(.regular, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
 
+    private var waitingHint: LocalizedStringKey {
+        switch host.phase {
+        case .awaitingPIN: return "Type the code above into the second Settings prompt."
+        case .deviceConnected: return "Connected — code coming next."
+        default: return "Waiting for iOS to connect… don’t force-quit Mocus."
+        }
+    }
+
     @ViewBuilder
     private var actions: some View {
         switch host.phase {
@@ -232,13 +240,7 @@ struct PairOnDeviceView: View {
             }
             .buttonStyle(.plain)
         case .advertising, .deviceConnected, .awaitingPIN:
-            Text({
-                switch host.phase {
-                case .awaitingPIN: return "Type the code above into the second Settings prompt."
-                case .deviceConnected: return "Connected — code coming next."
-                default: return "Waiting for iOS to connect… don’t force-quit Locus."
-                }
-            }())
+            Text(waitingHint)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity)

@@ -1,0 +1,201 @@
+/* Locus MN — Монгол орчуулга.
+   Түлхүүр нь кодонд байгаа англи текст. iOS-ийн Settings цэсний нэрс англиар
+   үлдэнэ (iOS монгол хэлгүй тул хэрэглэгч тэдгээрийг англиар хардаг). */
+
+/* MARK: - Map / status bar */
+"OK" = "За";
+"Connecting…" = "Холбогдож байна…";
+"Spoofing" = "Байршил солигдсон";
+"Reconnecting…" = "Дахин холбогдож байна…";
+"Disconnected" = "Холболт тасарсан";
+"Disconnected — %@" = "Холболт тасарсан — %@";
+"Not Spoofing" = "Идэвхгүй";
+"Connect LocalDevVPN" = "LocalDevVPN холбох";
+"Connect with mobile data" = "Мобайл датаар холбох";
+"Connected — ready to teleport" = "Холбогдсон — телепортод бэлэн";
+"On" = "Асаалттай";
+"Joy" = "Жойстик";
+"Stop" = "Зогсоох";
+"Teleport" = "Телепорт";
+"Tap the map to drop a pin first." = "Эхлээд газрын зураг дээр дарж цэг тавина уу.";
+"Spoof" = "Шинэ байршил";
+"Search places" = "Газар хайх";
+"Clear and dismiss keyboard" = "Арилгаад гарыг хаах";
+"Current location" = "Одоогийн байршил";
+"Set a route start and end." = "Маршрутын эхлэл, төгсгөлийг тохируулна уу.";
+"Build or draw a route first." = "Эхлээд маршрут үүсгэх эсвэл зурна уу.";
+"Nothing to export." = "Экспортлох зүйл алга.";
+"Remove Pin" = "Цэгийг устгах";
+"Selected pin" = "Сонгосон цэг";
+"Map pin" = "Газрын зургийн цэг";
+"Tap to show remove. Touch and hold to drag." = "Устгах товч гаргахын тулд дарна уу. Зөөхийн тулд удаан дарж чирнэ үү.";
+"Movement joystick" = "Хөдөлгөөний жойстик";
+
+/* MARK: - Mobile data mode */
+"Mobile data" = "Мобайл дата";
+"Close" = "Хаах";
+"Use Mocus without Wi‑Fi. Connect once while mobile data is on, then turn data off and teleport as usual." = "Wi‑Fi-гүйгээр Mocus ашиглах. Мобайл дата асаалттай үед нэг удаа холбогдоод, дараа нь датагаа унтрааж ердийнхөөрөө телепорт хийнэ.";
+"Turn Wi‑Fi off" = "Wi‑Fi-гаа унтраах";
+"Wi‑Fi is on — the normal Wi‑Fi mode works too." = "Wi‑Fi асаалттай байна — энгийн Wi‑Fi горим ч ажиллана.";
+"Turn mobile data on" = "Мобайл датагаа асаах";
+"Tap Connect" = "«Холбох» дарах";
+"Turn mobile data off" = "Мобайл датагаа унтраах";
+"Control Center → tap the mobile data icon." = "Control Center → мобайл датаны дүрс дээр дарна уу.";
+"Not connected yet" = "Холбогдоогүй байна";
+"Mobile data and LocalDevVPN must be on while you connect." = "Холбогдох үед мобайл дата болон LocalDevVPN асаалттай байх ёстой.";
+"Connected" = "Холбогдсон";
+"Now turn mobile data off in Control Center." = "Одоо Control Center-ээс мобайл датагаа унтраана уу.";
+"Ready to teleport" = "Телепорт хийхэд бэлэн";
+"Drop a pin on the map and tap Teleport. Stop keeps the connection, so you can teleport again without data." = "Газрын зураг дээр цэг тавиад «Телепорт» дарна уу. «Зогсоох» дарахад холболт хадгалагдах тул датагүйгээр дахин телепорт хийж болно.";
+"Done" = "Болсон";
+"Disconnect" = "Салгах";
+"If the connection drops, turn data on briefly and tap Connect again." = "Холболт тасарвал датагаа түр асаагаад «Холбох»-ыг дахин дарна уу.";
+"Connect" = "Холбох";
+"Open LocalDevVPN" = "LocalDevVPN нээх";
+"Get LocalDevVPN" = "LocalDevVPN татах";
+
+/* MARK: - Errors */
+"Tunnel IP is invalid. Check Settings → Tunnel IP (usually 10.7.0.1)." = "Туннелийн IP буруу байна. Тохиргоо → Туннелийн IP-г шалгана уу (ихэвчлэн 10.7.0.1).";
+"Could not read the RPPairing file. Generate one with idevice_pair in RPPairing mode." = "RPPairing файлыг уншиж чадсангүй. idevice_pair-ийн RPPairing горимоор шинээр үүсгэнэ үү.";
+"Could not open the developer tunnel. Turn mobile data on, check LocalDevVPN is connected, then tap Connect again." = "Хөгжүүлэгчийн туннелийг нээж чадсангүй. Мобайл датагаа асааж, LocalDevVPN холбогдсон эсэхийг шалгаад «Холбох» дээр дахин дарна уу.";
+"Could not open the developer tunnel. Is LocalDevVPN connected on Wi‑Fi?" = "Хөгжүүлэгчийн туннелийг нээж чадсангүй. LocalDevVPN Wi‑Fi дээр асаалттай байгаа эсэхийг шалгана уу.";
+"Connected to the tunnel but RemoteXPC handshake failed." = "Туннельд холбогдсон ч RemoteXPC холболт амжилтгүй боллоо.";
+"Could not open Apple’s location simulation service." = "Apple-ийн байршил загварчлах үйлчилгээг нээж чадсангүй.";
+"Failed to set simulated coordinates." = "Шинэ координатыг тохируулж чадсангүй.";
+"Failed to clear simulated location." = "Тохируулсан байршлыг арилгаж чадсангүй.";
+"No active simulation session." = "Идэвхтэй холболт алга.";
+"Import an RPPairing file in Settings first." = "Эхлээд Тохиргоо хэсэгт RPPairing файл оруулна уу.";
+"Drop a pin or teleport somewhere before using the joystick." = "Жойстик ашиглахаас өмнө цэг тавих эсвэл хаа нэг газар телепорт хийнэ үү.";
+"Mocus spoof dropped" = "Mocus-ийн байршил тасарлаа";
+"Clipboard is empty. Copy your RPPairing plist text (or the file), then try Paste again." = "Түр санах ой хоосон байна. RPPairing plist текстээ (эсвэл файлаа) хуулаад дахин буулгана уу.";
+"That doesn’t look like an RPPairing plist. Copy the full pairing file contents and try again." = "Энэ RPPairing plist биш бололтой. Хослуулах файлын агуулгыг бүтнээр нь хуулаад дахин оролдоно уу.";
+"No route found" = "Маршрут олдсонгүй";
+"No track points found in GPX" = "GPX файлд замын цэг олдсонгүй";
+
+/* MARK: - Pairing notifications */
+"Mocus connected" = "Mocus холбогдлоо";
+"Generating pairing code…" = "Хослуулах код үүсгэж байна…";
+"Mocus paired" = "Mocus хослогдлоо";
+"RPPairing is ready. Connect LocalDevVPN, then teleport." = "RPPairing бэлэн боллоо. LocalDevVPN-ээ асаагаад телепорт хийнэ үү.";
+"Mocus pairing code" = "Mocus хослуулах код";
+"Pairing finished but no pairing file was returned." = "Хослуулалт дууссан ч хослуулах файл ирсэнгүй.";
+"Paired, but failed to save file: %@" = "Хослогдсон ч файлыг хадгалж чадсангүй: %@";
+
+/* MARK: - Routes */
+"Road route" = "Замын маршрут";
+"Use current pin / spoof as start" = "Одоогийн цэг / байршлыг эхлэл болгох";
+"Use current pin as end" = "Одоогийн цэгийг төгсгөл болгох";
+"Start" = "Эхлэл";
+"End" = "Төгсгөл";
+"Build walk/drive route on roads" = "Замаар алхах/жолоодох маршрут үүсгэх";
+"Play / draw / GPX" = "Тоглуулах / зурах / GPX";
+"Use drawn path from map" = "Газрын зураг дээр зурсан замыг ашиглах";
+"Follow route" = "Маршрутаар явах";
+"Import GPX" = "GPX оруулах";
+"Export GPX" = "GPX экспортлох";
+"Routes follow Apple Maps roads/footpaths for the selected travel mode. Speed gets light random variation so motion looks less robotic." = "Маршрут нь сонгосон хөдөлгөөний төрлөөр Apple Maps-ийн авто болон явган хүний замыг дагана. Хурд бага зэрэг санамсаргүй хэлбэлздэг тул хөдөлгөөн илүү бодитой харагдана.";
+"Routes" = "Маршрут";
+
+/* MARK: - Settings */
+"Some system text switches after you reopen the app." = "Зарим системийн текст аппыг дахин нээсний дараа солигдоно.";
+"RPPairing file installed" = "RPPairing файл суулгасан";
+"No pairing file" = "Хослуулах файл алга";
+"Pair on this iPhone" = "Энэ iPhone дээр хослуулах";
+"Import RPPairing file…" = "RPPairing файл оруулах…";
+"Paste RPPairing from clipboard" = "RPPairing-ийг түр санах ойгоос буулгах";
+"Remove pairing file" = "Хослуулах файлыг устгах";
+"Developer pairing" = "Хөгжүүлэгчийн хослол";
+"On iOS 27, use Pair on this iPhone — no computer. Mocus advertises a pairable host; confirm the 6-digit code under Settings › Privacy & Security › Developer Mode › Pair with Host. On older iOS, import an RPPairing file from idevice_pair (not a SideStore lockdown .mobiledevicepairing). LiveContainer: enable Fix File Picker on Mocus, or use Paste / Share → LiveContainer → Mocus." = "iOS 27 дээр «Энэ iPhone дээр хослуулах»-ыг ашиглана уу — компьютер хэрэггүй. Mocus өөрийгөө хослуулах боломжтой хост болгон зарлана; 6 оронтой кодыг Settings › Privacy & Security › Developer Mode › Pair with Host хэсэгт баталгаажуулна. Хуучин iOS дээр idevice_pair-аар үүсгэсэн RPPairing файл оруулна уу (SideStore-ийн lockdown .mobiledevicepairing биш). LiveContainer: Mocus дээр Fix File Picker-ийг асаах, эсвэл Paste / Share → LiveContainer → Mocus ашиглана уу.";
+"Import an RPPairing file from idevice_pair (not a SideStore lockdown .mobiledevicepairing). If the file picker fails (common in LiveContainer), enable Fix File Picker on the app, share the file into LiveContainer → Mocus, or copy the plist and use Paste." = "idevice_pair-аар үүсгэсэн RPPairing файл оруулна уу (SideStore-ийн lockdown .mobiledevicepairing биш). Файл сонгогч ажиллахгүй бол (LiveContainer-т түгээмэл) апп дээр Fix File Picker-ийг асаах, файлаа LiveContainer → Mocus руу Share хийх, эсвэл plist-ийг хуулж «Буулгах»-ыг ашиглана уу.";
+"Device tunnel IP" = "Төхөөрөмжийн туннелийн IP";
+"Status" = "Төлөв";
+"Not connected" = "Холбогдоогүй";
+"Save tunnel IP" = "Туннелийн IP хадгалах";
+"Get LocalDevVPN (App Store)" = "LocalDevVPN татах (App Store)";
+"Tunnel" = "Туннель";
+"Connect LocalDevVPN before teleporting. Default tunnel IP is 10.7.0.1." = "Телепорт хийхээс өмнө LocalDevVPN-ээ асаана уу. Үндсэн туннелийн IP: 10.7.0.1.";
+"Connection" = "Холболт";
+"Connection mode" = "Холболтын горим";
+"No Wi‑Fi needed: with Wi‑Fi off, turn mobile data on, connect LocalDevVPN and tap Connect. Then turn data off and teleport. Stop keeps the connection open." = "Wi‑Fi шаардлагагүй: Wi‑Fi-гаа унтрааж, мобайл датагаа асаагаад LocalDevVPN-ээ холбож «Холбох» дарна. Дараа нь датагаа унтрааж телепорт хийнэ. «Зогсоох» дарахад холболт хадгалагдана.";
+"Start your first teleport on Wi‑Fi. It can keep working on cellular afterward." = "Эхний телепортоо Wi‑Fi дээр эхлүүлнэ. Дараа нь мобайл сүлжээн дээр ч ажилласаар байна.";
+"Privacy" = "Нууцлал";
+"Fully on-device. Favorites and recents stay in UserDefaults. No analytics, no accounts, nothing uploaded." = "Бүх зүйл утсан дээрээ. Дуртай болон саяхны газрууд зөвхөн энэ төхөөрөмжид хадгалагдана. Аналитик, бүртгэл байхгүй, юу ч илгээгдэхгүй.";
+"About" = "Тухай";
+"Version" = "Хувилбар";
+"Engine" = "Хөдөлгүүр";
+"Mocus is free and open source (MIT). Location injection uses the MIT-licensed idevice FFI." = "Mocus бол үнэгүй, нээлттэй эхийн (MIT) апп. Байршлыг MIT лицензтэй idevice FFI-ээр дамжуулан тохируулдаг.";
+"Mongolian edition, based on ChrisMack32/Locus." = "ChrisMack32/Locus дээр суурилсан Монгол хувилбар.";
+"locus, n. — a place. From the Latin for where you are." = "locus — газар, байршил. Латин хэлээр «таны байгаа газар».";
+"Settings" = "Тохиргоо";
+
+/* MARK: - Places */
+"Favorites" = "Дуртай газрууд";
+"Star a pin from the map to save it." = "Хадгалахын тулд газрын зураг дээрх цэгийг одоор тэмдэглэнэ үү.";
+"Delete" = "Устгах";
+"Rename" = "Нэр солих";
+"Recents" = "Саяхны";
+"Teleports show up here." = "Хийсэн телепортууд энд харагдана.";
+"Places" = "Газрууд";
+"Rename Favorite" = "Нэр солих";
+"Name" = "Нэр";
+"Cancel" = "Болих";
+"Save" = "Хадгалах";
+"Choose a name you’ll recognize later." = "Дараа нь таньж болохуйц нэр өгнө үү.";
+
+/* MARK: - Pair on this iPhone */
+"No computer needed" = "Компьютер хэрэггүй";
+"Mocus advertises a pairable host. iOS connects from Developer Mode, then Mocus shows a 6-digit code for you to type." = "Mocus өөрийгөө хослуулах боломжтой хост болгон зарлана. iOS нь Developer Mode-оос холбогдсоны дараа Mocus 6 оронтой код харуулах ба та түүнийг оруулна.";
+"Follow these steps" = "Дараах алхмуудыг хийнэ үү";
+"Keep Mocus open. You’ll leave briefly for Settings, then come back with a code." = "Mocus-ийг нээлттэй байлгана уу. Settings руу түр шилжээд кодтойгоо буцаж ирнэ.";
+"Tap Start pairing and allow Local Network + Location when asked." = "«Хослуулж эхлэх» дарж, асуухад Local Network болон Location-ийг зөвшөөрнө үү.";
+"Allow notifications — the code can appear as a banner over Settings." = "Мэдэгдлийг зөвшөөрнө үү — код Settings дээр баннер хэлбэрээр гарч болно.";
+"Open Settings › Privacy & Security › Developer Mode › Pair with Mocus → Pair." = "Settings › Privacy & Security › Developer Mode › Pair with Mocus → Pair-ийг нээнэ үү.";
+"Enter your unlock passcode first. On the next prompt, type Mocus’s 6-digit code." = "Эхлээд утасныхаа түгжээний кодыг оруулна. Дараагийн цонхонд Mocus-ийн 6 оронтой кодыг бичнэ үү.";
+"If the code isn’t here yet" = "Код хараахан гараагүй бол";
+"Keep the app listening while you confirm in Developer Mode. Don’t force-quit. If “Pair with Mocus” vanishes, stop/start pairing and reopen Developer Mode." = "Developer Mode-д баталгаажуулах хооронд аппыг ажиллуулсаар байлгана уу. Хүчээр хааж болохгүй. «Pair with Mocus» алга болвол хослуулахыг зогсоож дахин эхлүүлээд Developer Mode-ийг дахин нээнэ үү.";
+"Ready when you are" = "Эхлэхэд бэлэн";
+"Waiting for Settings…" = "Settings-ийг хүлээж байна…";
+"In Developer Mode tap Pair with Mocus → Pair." = "Developer Mode-д Pair with Mocus → Pair дарна уу.";
+"iPhone connected" = "iPhone холбогдлоо";
+"Generating your 6-digit code…" = "6 оронтой код үүсгэж байна…";
+"Enter this code in Settings" = "Энэ кодыг Settings-д оруулна уу";
+"Second prompt only — after your unlock passcode." = "Зөвхөн хоёр дахь цонхонд — түгжээний кодын дараа.";
+"Paired" = "Хослогдлоо";
+"Next we’ll set up LocalDevVPN." = "Дараа нь LocalDevVPN-ийг тохируулна.";
+"RPPairing file saved. Connect LocalDevVPN, then teleport." = "RPPairing файл хадгалагдлаа. LocalDevVPN-ээ асаагаад телепорт хийнэ үү.";
+"Pairing failed" = "Хослуулж чадсангүй";
+"Type the code above into the second Settings prompt." = "Дээрх кодыг Settings-ийн хоёр дахь цонхонд бичнэ үү.";
+"Connected — code coming next." = "Холбогдлоо — код удахгүй гарна.";
+"Waiting for iOS to connect… don’t force-quit Mocus." = "iOS холбогдохыг хүлээж байна… Mocus-ийг хүчээр хааж болохгүй.";
+"Start pairing" = "Хослуулж эхлэх";
+"Try again" = "Дахин оролдох";
+"Continue" = "Үргэлжлүүлэх";
+
+/* MARK: - First-run setup */
+"Step %lld of %lld" = "Алхам %1$lld / %2$lld";
+"Teleport your location.\nNo computer required." = "Байршлаа хормын дотор солино.\nКомпьютер хэрэггүй.";
+"A short setup — about two minutes." = "Богино тохиргоо — ойролцоогоор хоёр минут.";
+"Get started" = "Эхлэх";
+"Connect this iPhone" = "Энэ iPhone-ийг холбох";
+"Mocus needs a one-time pairing so it can set your location. You’ll confirm a short code in Settings." = "Mocus таны байршлыг солихын тулд нэг удаа хослуулах шаардлагатай. Settings хэсэгт богино код баталгаажуулна.";
+"Import a pairing file from your computer — Mocus uses it to set your location securely on this device." = "Компьютерээсээ хослуулах файл оруулна уу — Mocus үүгээр энэ төхөөрөмж дээр байршлыг аюулгүй тохируулна.";
+"Import pairing file" = "Хослуулах файл оруулах";
+"Paste from clipboard" = "Түр санах ойгоос буулгах";
+"On a Mac, run idevice_pair and create an RPPairing file." = "Компьютер дээрээ idevice_pair ажиллуулж RPPairing файл үүсгэнэ.";
+"AirDrop / Share into Mocus, or copy the plist text." = "AirDrop / Share-ээр Mocus руу илгээх, эсвэл plist текстийг хуулна.";
+"Tap Import, or Paste from clipboard if the picker doesn’t work (LiveContainer)." = "«Оруулах» дарна уу. Сонгогч ажиллахгүй бол (LiveContainer) түр санах ойгоос буулгана уу.";
+"One more app" = "Дахиад нэг апп";
+"LocalDevVPN is installed. Open it to turn on the private tunnel Mocus needs, then come back here." = "LocalDevVPN суусан байна. Үүнийг нээж Mocus-т хэрэгтэй хувийн туннелийг асаагаад энд буцаж ирнэ үү.";
+"LocalDevVPN creates a private tunnel Mocus uses to talk to your phone’s location system. Install it, turn it on, then you’re ready to teleport." = "LocalDevVPN нь Mocus-ийг утасны байршлын системтэй холбох хувийн туннель үүсгэдэг. Суулгаад асаавал телепорт хийхэд бэлэн.";
+"Installed" = "Суусан";
+"LocalDevVPN is on this iPhone." = "LocalDevVPN энэ iPhone дээр байна.";
+"Tap below to open it and start the tunnel. You’ll bounce back to Mocus." = "Доорх товчийг дарж нээгээд туннелийг асаана уу. Дараа нь Mocus руу автоматаар буцна.";
+"Install" = "Суулгах";
+"Get LocalDevVPN from the App Store." = "App Store-оос LocalDevVPN татна уу.";
+"Open it and turn the VPN on. Leave the default IP alone." = "Нээгээд VPN-ээ асаана уу. Үндсэн IP-г өөрчлөх шаардлагагүй.";
+"No Wi‑Fi?" = "Wi‑Fi байхгүй юу?";
+"Start your first teleport on Wi‑Fi — or turn on Mobile data mode in Settings to connect without it." = "Эхний телепортоо Wi‑Fi дээр хийнэ үү. Эсвэл Тохиргоо хэсгээс «Мобайл дата» горимыг асааж Wi‑Fi-гүйгээр холбогдоорой.";
+"I’ve connected it — continue" = "Асаасан — үргэлжлүүлэх";
+
+/* MARK: - Easter egg */
+"close enough" = "бараг л таарлаа";

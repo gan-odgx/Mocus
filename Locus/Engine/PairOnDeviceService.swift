@@ -108,8 +108,8 @@ final class PairOnDeviceService: ObservableObject {
     fileprivate func handleConnected() {
         phase = .deviceConnected
         Self.postPlainNotification(
-            title: "Locus connected",
-            body: "Generating pairing code…"
+            title: String(localized: "Mocus connected", bundle: .appLanguage),
+            body: String(localized: "Generating pairing code…", bundle: .appLanguage)
         )
     }
 
@@ -125,8 +125,8 @@ final class PairOnDeviceService: ObservableObject {
         phase = .succeeded
         teardown()
         Self.postPlainNotification(
-            title: "Locus paired",
-            body: "RPPairing is ready. Connect LocalDevVPN, then teleport."
+            title: String(localized: "Mocus paired", bundle: .appLanguage),
+            body: String(localized: "RPPairing is ready. Connect LocalDevVPN, then teleport.", bundle: .appLanguage)
         )
     }
 
@@ -166,7 +166,7 @@ final class PairOnDeviceService: ObservableObject {
 
     private static func postPINNotification(_ pin: String) {
         let content = UNMutableNotificationContent()
-        content.title = "Locus pairing code"
+        content.title = String(localized: "Mocus pairing code", bundle: .appLanguage)
         content.body = pin
         content.sound = .default
         if #available(iOS 15.0, *) {
@@ -186,7 +186,7 @@ final class PairOnDeviceService: ObservableObject {
     }
 
     private static func runBlockingAccept(outputPath: String, box: PairCallbackBox) {
-        let name = "Locus"
+        let name = "Mocus"
         let model = "Mac17,7"
 
         var outFile: OpaquePointer?
@@ -224,7 +224,7 @@ final class PairOnDeviceService: ObservableObject {
 
         guard let outFile else {
             DispatchQueue.main.async {
-                box.owner?.handleFailure("Pairing finished but no pairing file was returned.")
+                box.owner?.handleFailure(String(localized: "Pairing finished but no pairing file was returned.", bundle: .appLanguage))
             }
             return
         }
@@ -246,7 +246,7 @@ final class PairOnDeviceService: ObservableObject {
             }
             idevice_error_free(writeError)
             DispatchQueue.main.async {
-                box.owner?.handleFailure("Paired, but failed to save file: \(message)")
+                box.owner?.handleFailure(String(localized: "Paired, but failed to save file: \(message)", bundle: .appLanguage))
             }
             return
         }
@@ -304,7 +304,7 @@ private func listeningTrampoline(
     let values = (
         port,
         serviceIdentifier.map { String(cString: $0) } ?? "",
-        name.map { String(cString: $0) } ?? "Locus",
+        name.map { String(cString: $0) } ?? "Mocus",
         model.map { String(cString: $0) } ?? "Mac17,7",
         authTag.map { String(cString: $0) } ?? "",
         ver.map { String(cString: $0) } ?? "26",
