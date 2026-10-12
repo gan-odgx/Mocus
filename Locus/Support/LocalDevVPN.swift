@@ -13,16 +13,18 @@ enum LocalDevVPN {
         UIApplication.shared.canOpenURL(detectURL)
     }
 
-    /// LocalDevVPN puts the tunnel network on a `10.7.0.x` (or custom) utun when connected.
+    /// Whether LocalDevVPN's tunnel interface is up. Only a hint for the UI: connecting never waits on it.
+    /// LocalDevVPN 1.3+ gives the utun `10.7.1.1` and routes the device at `10.7.0.1`; older builds used
+    /// `10.7.0.x` for both. So accept any utun address in the target's /16 (or the target itself).
     static var isConnected: Bool {
-        let addresses = ipv4InterfaceAddresses()
+        let interfaces = ipv4InterfaceAddresses()
         let target = TunnelConfig.targetIP
-        if addresses.contains(target) { return true }
+        if interfaces.contains(where: { $0.address == target }) { return true }
 
         let parts = target.split(separator: ".")
         guard parts.count == 4 else { return false }
-        let prefix = parts.dropLast().joined(separator: ".") + "."
-        return addresses.contains { $0.hasPrefix(prefix) }
+        let prefix = parts.prefix(2).joined(separator: ".") + "."
+        return interfaces.contains { $0.name.hasPrefix("utun") && $0.address.hasPrefix(prefix) }
     }
 
     static func openInstalled() {
@@ -42,12 +44,12 @@ enum LocalDevVPN {
         }
     }
 
-    private static func ipv4InterfaceAddresses() -> [String] {
+    private static func ipv4InterfaceAddresses() -> [(name: String, address: String)] {
         var ifaddr: UnsafeMutablePointer<ifaddrs>?
         guard getifaddrs(&ifaddr) == 0, let first = ifaddr else { return [] }
         defer { freeifaddrs(ifaddr) }
 
-        var results: [String] = []
+        var results: [(name: String, address: String)] = []
         var ptr: UnsafeMutablePointer<ifaddrs>? = first
         while let current = ptr {
             let interface = current.pointee
@@ -64,7 +66,7 @@ enum LocalDevVPN {
                     0,
                     NI_NUMERICHOST
                 ) == 0 {
-                    results.append(String(cString: host))
+                    results.append((name: String(cString: interface.ifa_name), address: String(cString: host)))
                 }
             }
             ptr = interface.ifa_next

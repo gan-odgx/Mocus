@@ -157,10 +157,7 @@ final class SpoofSession: ObservableObject {
         }
         guard !isBusy else { return }
         askForNotificationsOnce()
-        guard LocalDevVPN.isConnected else {
-            show(LocationEngineError(.vpnOff))
-            return
-        }
+        // No VPN pre-check: it can read "off" while LocalDevVPN works (as in the original app, just try).
         isBusy = true
         let path = pairing.pairingPath
         let ip = TunnelConfig.targetIP
@@ -233,10 +230,10 @@ final class SpoofSession: ObservableObject {
         stopJoystick()
         stopResend()
         let keep = ConnectionMode.current == .cellular
-        // While dropped, Stop may reopen the tunnel (if the VPN is up) just to turn the spoof off.
+        // While dropped, Stop reopens the tunnel just to turn the spoof off.
         let path = pairing.pairingPath
         let ip = TunnelConfig.targetIP
-        let reopen = status.isDropped && LocalDevVPN.isConnected
+        let reopen = status.isDropped
         isBusy = true
         engineBusy = true
         let gen = generation
@@ -455,11 +452,9 @@ final class SpoofSession: ObservableObject {
         let lon = coordinate.longitude
         let path = pairing.pairingPath
         let ip = TunnelConfig.targetIP
-        // Without LocalDevVPN there's no route to the device; don't spend the timeout dialing.
-        let vpnUp = LocalDevVPN.isConnected
         Task {
             let result = await Self.engine {
-                LocationEngine.set(latitude: lat, longitude: lon, pairingPath: path, deviceIP: ip, canOpen: vpnUp)
+                LocationEngine.set(latitude: lat, longitude: lon, pairingPath: path, deviceIP: ip)
             }
             engineBusy = false
             isBusy = false
@@ -471,7 +466,7 @@ final class SpoofSession: ObservableObject {
             case .success:
                 didApply(coordinate, pairing: pairing, markRecent: markRecent)
             case .failure(let error):
-                applyFailed(vpnUp ? error : LocationEngineError(.vpnOff), pairing: pairing, userInitiated: userInitiated)
+                applyFailed(error, pairing: pairing, userInitiated: userInitiated)
             }
             drainPending(pairing: pairing)
         }
@@ -643,7 +638,6 @@ final class SpoofSession: ObservableObject {
         guard status.isDropped, simulated != nil, !engineBusy, Date() >= nextRetry else { return }
         retryDelay = min(retryDelay * 2, 120)
         nextRetry = Date().addingTimeInterval(retryDelay)
-        guard LocalDevVPN.isConnected else { return }
         if stopPending {
             finishPendingStop(pairing: pairing)
         } else if let sim = simulated {

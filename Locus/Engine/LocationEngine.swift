@@ -68,9 +68,6 @@ enum LocationEngine {
     /// Message of the last idevice error, attached to the next returned error.
     private static var lastMessage: String?
 
-    /// A dead tunnel used to hang until the library's default timeout; 5 s is plenty on loopback.
-    private static let configured: Void = idevice_set_global_timeout(5)
-
     static var isSessionActive: Bool { locationSimulation != nil }
 
     /// `canOpen: false` only reuses an open session (heartbeats) and never dials the tunnel.
@@ -91,7 +88,6 @@ enum LocationEngine {
     static func probe() -> Bool {
         var alive = false
         queue.sync {
-            _ = configured
             alive = probeLocked()
         }
         return alive
@@ -117,7 +113,6 @@ enum LocationEngine {
     private static func run(_ work: () -> LocationEngineError.Kind?) -> Result<Void, LocationEngineError> {
         var result: Result<Void, LocationEngineError> = .success(())
         queue.sync {
-            _ = configured
             lastMessage = nil
             if let kind = work() {
                 result = .failure(LocationEngineError(kind, detail: lastMessage))
