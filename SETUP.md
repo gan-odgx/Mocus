@@ -44,10 +44,10 @@ On Wi‑Fi: drop a pin → **Teleport**. Then joystick / routes / GPX work; the 
 ### No Wi‑Fi: Mobile data mode
 
 1. Mocus → **Settings → Connection mode → Mobile data**.
-2. Turn **Wi‑Fi off** and **mobile data on**.
-3. Connect **LocalDevVPN**.
-4. Tap the status bar on the map (**Connect with mobile data**) → **Connect**.
-5. Turn **mobile data off** (Control Center).
-6. Drop a pin → **Teleport**. **Stop** keeps the connection, so you can teleport again without data.
+2. Turn **Wi‑Fi off** and connect **LocalDevVPN**.
+3. Turn **mobile data off** (Control Center). iOS won't open the developer tunnel while LocalDevVPN rides on mobile data.
+4. Tap the status bar on the map (**Connect with mobile data**) → **Connect**. If data is still on, Mocus waits up to a minute and connects as soon as you turn it off.
+5. Turn **mobile data back on**: the open tunnel keeps working, and the map and search load again.
+6. Drop a pin → **Teleport**. **Stop** keeps the connection, so you can teleport again any time.
 
-If the connection drops, turn data on briefly and tap **Connect** again; the last spoofed spot is restored.
+If the connection drops, turn mobile data off briefly and tap **Connect** again; the last spoofed spot is restored.

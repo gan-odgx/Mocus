@@ -1,7 +1,8 @@
 import SwiftUI
 
-/// Mobile-data mode checklist: Wi‑Fi off → data on → LocalDevVPN → Connect → data off → teleport.
-/// The tunnel opened while data is on keeps working after data goes off.
+/// Mobile-data mode checklist: Wi‑Fi off → LocalDevVPN → data off → Connect → data back on → teleport.
+/// iOS only opens the developer tunnel while LocalDevVPN isn't riding on mobile data; once open it
+/// keeps working with data on.
 struct CellularConnectView: View {
     @EnvironmentObject private var session: SpoofSession
     @EnvironmentObject private var pairing: PairingStore
@@ -18,7 +19,7 @@ struct CellularConnectView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Use Mocus without Wi‑Fi. Connect once while mobile data is on, then turn data off and teleport as usual.")
+                    Text("Use Mocus without Wi‑Fi. Connect once with mobile data off, then turn data back on and teleport as usual.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -56,11 +57,12 @@ struct CellularConnectView: View {
         VStack(alignment: .leading, spacing: 14) {
             checkRow(1, "Turn Wi‑Fi off", done: !network.wifiOn,
                      hint: network.wifiOn ? "Wi‑Fi is on — the normal Wi‑Fi mode works too." : nil)
-            checkRow(2, "Turn mobile data on", done: network.cellularOn || connected)
-            checkRow(3, "Connect LocalDevVPN", done: vpnConnected)
+            checkRow(2, "Connect LocalDevVPN", done: vpnConnected || connected)
+            checkRow(3, "Turn mobile data off", done: connected || !network.cellularOn,
+                     hint: !connected && network.cellularOn ? "Control Center → tap the mobile data icon. iOS opens the connection only while data is off." : nil)
             checkRow(4, "Tap Connect", done: connected)
-            checkRow(5, "Turn mobile data off", done: connected && !network.cellularOn,
-                     hint: connected && network.cellularOn ? "Control Center → tap the mobile data icon." : nil)
+            checkRow(5, "Turn mobile data back on", done: connected && network.cellularOn,
+                     hint: connected && !network.cellularOn ? "Map and search need data. Teleports keep working." : nil)
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -102,29 +104,41 @@ struct CellularConnectView: View {
     private var statusCard: some View {
         VStack(spacing: 10) {
             if !connected {
-                Image(systemName: "antenna.radiowaves.left.and.right")
+                Image(systemName: session.waitingForDataOff ? "hourglass" : "antenna.radiowaves.left.and.right")
                     .font(.largeTitle)
                     .foregroundStyle(LocusTheme.statusWarn)
-                Text("Not connected yet")
-                    .font(.title3.weight(.bold))
-                    .foregroundStyle(.primary)
-                Text("Mobile data and LocalDevVPN must be on while you connect.")
+                if session.waitingForDataOff && network.cellularOn {
+                    Text("Turn mobile data off now")
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text("Mocus connects as soon as data is off.")
+                } else if session.waitingForDataOff {
+                    Text("Connecting…")
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text("Check that LocalDevVPN is on.")
+                } else {
+                    Text("Not connected yet")
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.primary)
+                    Text("LocalDevVPN must be on and mobile data off while you connect.")
+                }
             } else if network.cellularOn {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.largeTitle)
-                    .foregroundStyle(LocusTheme.statusGood)
-                Text("Connected")
-                    .font(.title3.weight(.bold))
-                    .foregroundStyle(.primary)
-                Text("Pick your destinations now and star them (★): the map and search need data. Then turn mobile data off in Control Center.")
-            } else {
                 Image(systemName: "location.north.circle.fill")
                     .font(.largeTitle)
                     .foregroundStyle(LocusTheme.accent)
                 Text("Ready to teleport")
                     .font(.title3.weight(.bold))
                     .foregroundStyle(.primary)
-                Text("Open saved places (★) and tap one to teleport. The map may stay blank without data. Stop keeps the connection, so you can teleport again without data.")
+                Text("Data is back on, so the map and search work. Stop keeps the connection, so you can teleport again any time.")
+            } else {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.largeTitle)
+                    .foregroundStyle(LocusTheme.statusGood)
+                Text("Connected")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(.primary)
+                Text("Turn mobile data back on to use the map and search, then teleport.")
             }
         }
         .font(.subheadline)
@@ -154,7 +168,7 @@ struct CellularConnectView: View {
                 }
                 .buttonStyle(.plain)
 
-                Text("If the connection drops, turn data on briefly and tap Connect again.")
+                Text("If the connection drops, turn mobile data off briefly and tap Connect again.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

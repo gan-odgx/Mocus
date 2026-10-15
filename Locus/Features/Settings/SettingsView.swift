@@ -133,7 +133,7 @@ struct SettingsView: View {
                     Text("Connection mode")
                 } footer: {
                     Text(connectionMode == .cellular
-                         ? "No Wi‑Fi needed: with Wi‑Fi off, turn mobile data on, connect LocalDevVPN and tap Connect. Then turn data off and teleport. Stop keeps the connection open."
+                         ? "No Wi‑Fi needed: with Wi‑Fi off and LocalDevVPN on, turn mobile data off and tap Connect. Then turn data back on and teleport. Stop keeps the connection open."
                          : "Start your first teleport on Wi‑Fi. It can keep working on cellular afterward.")
                 }
 

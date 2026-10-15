@@ -89,6 +89,8 @@ final class SpoofSession: ObservableObject {
     /// Tunnel open (spoofing or not). Mobile-data mode shows this as "ready".
     @Published private(set) var tunnelReady = false
     @Published var showCellularConnect = false
+    /// Connect is retrying until mobile data goes off (the checklist turns this into a prompt).
+    @Published private(set) var waitingForDataOff = false
 
     @Published var favorites: [SavedPlace] = []
     @Published var recents: [SavedPlace] = []
@@ -148,7 +150,9 @@ final class SpoofSession: ObservableObject {
         apply(coordinate, pairing: pairing, markRecent: true, userInitiated: true)
     }
 
-    /// Mobile-data mode: open the tunnel while data is on, without moving the GPS.
+    /// Mobile-data mode: open the tunnel without moving the GPS. iOS refuses the developer tunnel while
+    /// LocalDevVPN rides on mobile data, so it only opens with data off; afterwards data can go back on.
+    /// If data is still on, keep retrying for a minute while the checklist asks the user to turn it off.
     func connectTunnel(pairing: PairingStore) {
         guard pairing.hasPairingFile else {
             lastError = String(localized: "Import an RPPairing file in Settings first.", bundle: .appLanguage)
@@ -163,7 +167,15 @@ final class SpoofSession: ObservableObject {
         let ip = TunnelConfig.targetIP
         let gen = generation
         Task {
-            let result = await Self.engine { LocationEngine.connect(pairingPath: path, deviceIP: ip) }
+            let deadline = Date().addingTimeInterval(60)
+            var result = await Self.engine { LocationEngine.connect(pairingPath: path, deviceIP: ip) }
+            while case .failure(let error) = result, error.kind == .tunnelUnreachable, Date() < deadline, gen == generation {
+                waitingForDataOff = true
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                guard gen == generation else { break }
+                result = await Self.engine { LocationEngine.connect(pairingPath: path, deviceIP: ip) }
+            }
+            waitingForDataOff = false
             isBusy = false
             guard gen == generation else { return }
             switch result {
@@ -171,7 +183,7 @@ final class SpoofSession: ObservableObject {
                 tunnelReady = true
                 lastError = nil
                 lastErrorAction = nil
-                // Stay alive while the user leaves to turn data off.
+                // Stay alive while the user leaves to turn data back on.
                 beginBackground()
                 locationKeeper.start()
                 if stopPending {

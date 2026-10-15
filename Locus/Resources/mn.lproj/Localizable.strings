@@ -33,20 +33,24 @@
 /* MARK: - Mobile data mode */
 "Mobile data" = "Мобайл дата";
 "Close" = "Хаах";
-"Use Mocus without Wi‑Fi. Connect once while mobile data is on, then turn data off and teleport as usual." = "Wi‑Fi-гүйгээр Mocus ашиглах. Мобайл дата асаалттай үед нэг удаа холбогдоод, дараа нь датагаа унтрааж ердийнхөөрөө телепорт хийнэ.";
+"Use Mocus without Wi‑Fi. Connect once with mobile data off, then turn data back on and teleport as usual." = "Wi‑Fi-гүйгээр Mocus ашиглах. Мобайл датагаа унтраасан үед нэг удаа холбогдоод, дараа нь датагаа буцааж асааж ердийнхөөрөө телепорт хийнэ.";
 "Turn Wi‑Fi off" = "Wi‑Fi-гаа унтраах";
 "Wi‑Fi is on — the normal Wi‑Fi mode works too." = "Wi‑Fi асаалттай байна — энгийн Wi‑Fi горим ч ажиллана.";
-"Turn mobile data on" = "Мобайл датагаа асаах";
+"Turn mobile data back on" = "Мобайл датагаа буцааж асаах";
+"Map and search need data. Teleports keep working." = "Газрын зураг, хайлтад дата хэрэгтэй. Телепорт үргэлжлэн ажиллана.";
 "Tap Connect" = "«Холбох» дарах";
 "Turn mobile data off" = "Мобайл датагаа унтраах";
-"Control Center → tap the mobile data icon." = "Control Center → мобайл датаны дүрс дээр дарна уу.";
+"Control Center → tap the mobile data icon. iOS opens the connection only while data is off." = "Control Center → мобайл датаны дүрс дээр дарна уу. iOS холболтыг зөвхөн дата унтраалттай үед нээдэг.";
 "Not connected yet" = "Холбогдоогүй байна";
-"Mobile data and LocalDevVPN must be on while you connect." = "Холбогдох үед мобайл дата болон LocalDevVPN асаалттай байх ёстой.";
+"LocalDevVPN must be on and mobile data off while you connect." = "Холбогдох үед LocalDevVPN асаалттай, мобайл дата унтраалттай байх ёстой.";
+"Turn mobile data off now" = "Мобайл датагаа одоо унтраана уу";
+"Mocus connects as soon as data is off." = "Дата унтармагц Mocus холбогдоно.";
+"Check that LocalDevVPN is on." = "LocalDevVPN асаалттай эсэхийг шалгана уу.";
 "Connected" = "Холбогдсон";
 "Ready to teleport" = "Телепорт хийхэд бэлэн";
 "Done" = "Болсон";
 "Disconnect" = "Салгах";
-"If the connection drops, turn data on briefly and tap Connect again." = "Холболт тасарвал датагаа түр асаагаад «Холбох»-ыг дахин дарна уу.";
+"If the connection drops, turn mobile data off briefly and tap Connect again." = "Холболт тасарвал мобайл датагаа түр унтраагаад «Холбох»-ыг дахин дарна уу.";
 "Connect" = "Холбох";
 "Open LocalDevVPN" = "LocalDevVPN нээх";
 "Get LocalDevVPN" = "LocalDevVPN татах";
@@ -54,8 +58,8 @@
 /* MARK: - Errors */
 "Tunnel IP is invalid. Check Settings → Tunnel IP (usually 10.7.0.1)." = "Туннелийн IP буруу байна. Тохиргоо → Туннелийн IP-г шалгана уу (ихэвчлэн 10.7.0.1).";
 "Could not read the RPPairing file. Generate one with idevice_pair in RPPairing mode." = "RPPairing файлыг уншиж чадсангүй. idevice_pair-ийн RPPairing горимоор шинээр үүсгэнэ үү.";
-"Could not open the developer tunnel. Turn mobile data on, check LocalDevVPN is connected, then tap Connect again." = "Хөгжүүлэгчийн туннелийг нээж чадсангүй. Мобайл датагаа асааж, LocalDevVPN холбогдсон эсэхийг шалгаад «Холбох» дээр дахин дарна уу.";
-"Could not open the developer tunnel. Is LocalDevVPN connected on Wi‑Fi?" = "Хөгжүүлэгчийн туннелийг нээж чадсангүй. LocalDevVPN Wi‑Fi дээр асаалттай байгаа эсэхийг шалгана уу.";
+"Could not open the developer tunnel. iOS allows it only while mobile data is off: keep LocalDevVPN on, turn mobile data off, then tap Connect again." = "Хөгжүүлэгчийн туннелийг нээж чадсангүй. iOS үүнийг зөвхөн мобайл дата унтраалттай үед зөвшөөрдөг: LocalDevVPN-ээ асаалттай байлгаж, мобайл датагаа унтраагаад «Холбох» дээр дахин дарна уу.";
+"Could not open the developer tunnel. Is LocalDevVPN connected? Without Wi‑Fi, turn mobile data off and try again." = "Хөгжүүлэгчийн туннелийг нээж чадсангүй. LocalDevVPN асаалттай эсэхийг шалгана уу. Wi‑Fi-гүй бол мобайл датагаа унтраагаад дахин оролдоно уу.";
 "Connected to the tunnel but RemoteXPC handshake failed." = "Туннельд холбогдсон ч RemoteXPC холболт амжилтгүй боллоо.";
 "Could not open Apple’s location simulation service." = "Apple-ийн байршил загварчлах үйлчилгээг нээж чадсангүй.";
 "Failed to set simulated coordinates." = "Шинэ координатыг тохируулж чадсангүй.";
@@ -113,7 +117,7 @@
 "Connect LocalDevVPN before teleporting. Default tunnel IP is 10.7.0.1." = "Телепорт хийхээс өмнө LocalDevVPN-ээ асаана уу. Үндсэн туннелийн IP: 10.7.0.1.";
 "Connection" = "Холболт";
 "Connection mode" = "Холболтын горим";
-"No Wi‑Fi needed: with Wi‑Fi off, turn mobile data on, connect LocalDevVPN and tap Connect. Then turn data off and teleport. Stop keeps the connection open." = "Wi‑Fi шаардлагагүй: Wi‑Fi-гаа унтрааж, мобайл датагаа асаагаад LocalDevVPN-ээ холбож «Холбох» дарна. Дараа нь датагаа унтрааж телепорт хийнэ. «Зогсоох» дарахад холболт хадгалагдана.";
+"No Wi‑Fi needed: with Wi‑Fi off and LocalDevVPN on, turn mobile data off and tap Connect. Then turn data back on and teleport. Stop keeps the connection open." = "Wi‑Fi шаардлагагүй: Wi‑Fi-гаа унтрааж, LocalDevVPN-ээ асаагаад мобайл датагаа унтрааж «Холбох» дарна. Дараа нь датагаа буцааж асаагаад телепорт хийнэ. «Зогсоох» дарахад холболт хадгалагдана.";
 "Start your first teleport on Wi‑Fi. It can keep working on cellular afterward." = "Эхний телепортоо Wi‑Fi дээр эхлүүлнэ. Дараа нь мобайл сүлжээн дээр ч ажилласаар байна.";
 "Privacy" = "Нууцлал";
 "Fully on-device. Favorites and recents stay in UserDefaults. No analytics, no accounts, nothing uploaded." = "Бүх зүйл утсан дээрээ. Дуртай болон саяхны газрууд зөвхөн энэ төхөөрөмжид хадгалагдана. Аналитик, бүртгэл байхгүй, юу ч илгээгдэхгүй.";
@@ -211,5 +215,5 @@
 "Remove the pairing file?" = "Хослуулах файлыг устгах уу?";
 "Remove" = "Устгах";
 "Mocus can't change your location until you pair again. On iOS 18–26 that needs a computer." = "Дахин хослуулах хүртэл Mocus байршил сольж чадахгүй. iOS 18–26 дээр үүнд компьютер хэрэгтэй.";
-"Pick your destinations now and star them (★): the map and search need data. Then turn mobile data off in Control Center." = "Очих газруудаа одоо сонгоод одоор (★) тэмдэглэнэ үү: газрын зураг, хайлтад дата хэрэгтэй. Дараа нь Control Center-ээс мобайл датагаа унтраана уу.";
-"Open saved places (★) and tap one to teleport. The map may stay blank without data. Stop keeps the connection, so you can teleport again without data." = "Хадгалсан газруудаа (★) нээгээд нэгийг нь дарж телепорт хийнэ үү. Датагүй үед газрын зураг хоосон харагдаж болно. «Зогсоох» дарахад холболт хадгалагдах тул датагүйгээр дахин телепорт хийж болно.";
+"Turn mobile data back on to use the map and search, then teleport." = "Газрын зураг, хайлт ашиглахын тулд мобайл датагаа буцааж асаагаад телепорт хийнэ үү.";
+"Data is back on, so the map and search work. Stop keeps the connection, so you can teleport again any time." = "Дата асаалттай тул газрын зураг, хайлт ажиллана. «Зогсоох» дарахад холболт хадгалагдах тул хүссэн үедээ дахин телепорт хийж болно.";

@@ -36,9 +36,9 @@ struct LocationEngineError: LocalizedError {
         case .vpnOff: return String(localized: "LocalDevVPN is off. Turn it on, then try again.", bundle: .appLanguage)
         case .tunnelUnreachable:
             if ConnectionMode.current == .cellular {
-                return String(localized: "Could not open the developer tunnel. Turn mobile data on, check LocalDevVPN is connected, then tap Connect again.", bundle: .appLanguage)
+                return String(localized: "Could not open the developer tunnel. iOS allows it only while mobile data is off: keep LocalDevVPN on, turn mobile data off, then tap Connect again.", bundle: .appLanguage)
             }
-            return String(localized: "Could not open the developer tunnel. Is LocalDevVPN connected on Wi‑Fi?", bundle: .appLanguage)
+            return String(localized: "Could not open the developer tunnel. Is LocalDevVPN connected? Without Wi‑Fi, turn mobile data off and try again.", bundle: .appLanguage)
         case .pairingRejected: return String(localized: "This iPhone rejected the pairing file. It may be out of date after an iOS update: pair again in Settings.", bundle: .appLanguage)
         case .remoteServer: return String(localized: "Connected to the tunnel but RemoteXPC handshake failed.", bundle: .appLanguage)
         case .simulationCreate: return String(localized: "Could not open Apple’s location simulation service.", bundle: .appLanguage)
