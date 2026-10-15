@@ -68,6 +68,11 @@ enum LocationEngine {
     /// Message of the last idevice error, attached to the next returned error.
     private static var lastMessage: String?
 
+    /// Every network step (TCP connect, handshake, request) gives up after 5 s. Without it a connect that
+    /// never answers (e.g. while LocalDevVPN re-routes as mobile data turns off) blocks the engine queue,
+    /// and with it the Teleport button, forever. On the loopback tunnel a healthy step takes well under 1 s.
+    private static let configured: Void = idevice_set_global_timeout(5)
+
     static var isSessionActive: Bool { locationSimulation != nil }
 
     /// `canOpen: false` only reuses an open session (heartbeats) and never dials the tunnel.
@@ -88,6 +93,7 @@ enum LocationEngine {
     static func probe() -> Bool {
         var alive = false
         queue.sync {
+            _ = configured
             alive = probeLocked()
         }
         return alive
@@ -113,6 +119,7 @@ enum LocationEngine {
     private static func run(_ work: () -> LocationEngineError.Kind?) -> Result<Void, LocationEngineError> {
         var result: Result<Void, LocationEngineError> = .success(())
         queue.sync {
+            _ = configured
             lastMessage = nil
             if let kind = work() {
                 result = .failure(LocationEngineError(kind, detail: lastMessage))

@@ -246,6 +246,7 @@ final class SpoofSession: ObservableObject {
         generation += 1
         pending = nil
         waitingForDataOff = false
+        isBusy = false
         status = simulated == nil ? .idle : .dropped(LocationEngineError(.tunnelUnreachable).summary)
     }
 
@@ -499,7 +500,8 @@ final class SpoofSession: ObservableObject {
             engineBusy = false
             isBusy = false
             guard gen == generation else {
-                pending = nil
+                // Stop/Cancel already dropped older work; anything queued since is a fresh tap.
+                drainPending(pairing: pairing)
                 return
             }
             switch result {

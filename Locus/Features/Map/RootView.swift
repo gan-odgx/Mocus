@@ -332,6 +332,11 @@ struct BottomControlsView: View {
                         .accessibilityLabel("Stop")
                     }
                     Button {
+                        // While waiting for mobile data to go off, this button cancels the wait.
+                        if session.waitingForDataOff {
+                            session.cancelWaiting()
+                            return
+                        }
                         guard let pin = session.pin else {
                             session.lastError = String(localized: "Tap the map to drop a pin first.", bundle: .appLanguage)
                             session.lastErrorAction = nil
@@ -339,7 +344,7 @@ struct BottomControlsView: View {
                         }
                         session.teleport(to: pin, pairing: pairing)
                     } label: {
-                        Text("Teleport")
+                        Text(session.waitingForDataOff ? LocalizedStringKey("Cancel") : LocalizedStringKey("Teleport"))
                             .font(.subheadline.weight(.bold))
                             .foregroundStyle(.black)
                             .frame(minWidth: 96)
@@ -349,7 +354,7 @@ struct BottomControlsView: View {
                             .contentShape(Capsule())
                     }
                     .buttonStyle(.plain)
-                    .disabled(session.isBusy)
+                    .disabled(session.isBusy && !session.waitingForDataOff)
                 }
             }
         }
