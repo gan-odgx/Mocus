@@ -75,10 +75,12 @@ struct StatusBarView: View {
         case connectVPN
         case connectCellular
         case cellularReady
+        case waitDataOff
         case status(String)
     }
 
     private var display: Display {
+        if session.waitingForDataOff { return .waitDataOff }
         switch session.status {
         case .idle:
             if connectionMode == .cellular {
@@ -101,7 +103,7 @@ struct StatusBarView: View {
         switch display {
         case .notSpoofing:
             return Color.primary.opacity(0.55)
-        case .connectVPN, .connectCellular:
+        case .connectVPN, .connectCellular, .waitDataOff:
             return LocusTheme.statusWarn
         case .cellularReady:
             return LocusTheme.statusGood
@@ -121,13 +123,20 @@ struct StatusBarView: View {
         case .connectVPN: return String(localized: "Connect LocalDevVPN", bundle: .appLanguage)
         case .connectCellular: return String(localized: "Connect with mobile data", bundle: .appLanguage)
         case .cellularReady: return String(localized: "Connected — ready to teleport", bundle: .appLanguage)
+        case .waitDataOff: return String(localized: "Turn mobile data off…", bundle: .appLanguage)
         case .status(let text): return text
         }
     }
 
     var body: some View {
         Group {
-            if connectionMode == .cellular {
+            if session.waitingForDataOff {
+                // Tapping gives up waiting.
+                Button(action: session.cancelWaiting) {
+                    statusContent
+                }
+                .buttonStyle(.plain)
+            } else if connectionMode == .cellular {
                 // Any state opens the checklist: connect, reconnect after a drop, or disconnect.
                 Button {
                     session.showCellularConnect = true
@@ -184,7 +193,11 @@ struct StatusBarView: View {
 
             Spacer(minLength: 8)
 
-            if case .connectVPN = display {
+            if case .waitDataOff = display {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else if case .connectVPN = display {
                 Image(systemName: "lock.shield.fill")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(LocusTheme.accent)

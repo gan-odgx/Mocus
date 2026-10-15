@@ -89,8 +89,11 @@ final class SpoofSession: ObservableObject {
     /// Tunnel open (spoofing or not). Mobile-data mode shows this as "ready".
     @Published private(set) var tunnelReady = false
     @Published var showCellularConnect = false
-    /// Connect is retrying until mobile data goes off (the checklist turns this into a prompt).
+    /// Opening the tunnel is retrying until mobile data goes off (iOS won't open the developer tunnel
+    /// while LocalDevVPN rides on mobile data). The status bar and checklist turn this into a prompt.
     @Published private(set) var waitingForDataOff = false
+    /// Whether mobile data is on: decides if a failed connect is worth waiting on.
+    private let network: NetworkStatus
 
     @Published var favorites: [SavedPlace] = []
     @Published var recents: [SavedPlace] = []
@@ -121,6 +124,7 @@ final class SpoofSession: ObservableObject {
     private static let dropNotificationID = "mocus.drop"
 
     init() {
+        network = NetworkStatus()
         favorites = SavedPlace.load(key: favoritesKey)
         recents = SavedPlace.load(key: recentsKey)
     }
@@ -169,7 +173,9 @@ final class SpoofSession: ObservableObject {
         Task {
             let deadline = Date().addingTimeInterval(60)
             var result = await Self.engine { LocationEngine.connect(pairingPath: path, deviceIP: ip) }
-            while case .failure(let error) = result, error.kind == .tunnelUnreachable, Date() < deadline, gen == generation {
+            // Only worth waiting while mobile data is on; once waiting, keep going as data turns off.
+            while case .failure(let error) = result, error.kind == .tunnelUnreachable, Date() < deadline, gen == generation,
+                  waitingForDataOff || network.cellularOn {
                 waitingForDataOff = true
                 try? await Task.sleep(nanoseconds: 2_000_000_000)
                 guard gen == generation else { break }
@@ -232,6 +238,15 @@ final class SpoofSession: ObservableObject {
                 lastErrorAction = nil
             }
         }
+    }
+
+    /// Gives up waiting for mobile data to go off (tap on the status bar).
+    func cancelWaiting() {
+        guard waitingForDataOff else { return }
+        generation += 1
+        pending = nil
+        waitingForDataOff = false
+        status = simulated == nil ? .idle : .dropped(LocationEngineError(.tunnelUnreachable).summary)
     }
 
     func stop(pairing: PairingStore) {
@@ -465,9 +480,22 @@ final class SpoofSession: ObservableObject {
         let path = pairing.pairingPath
         let ip = TunnelConfig.targetIP
         Task {
-            let result = await Self.engine {
+            // A teleport that has to open the tunnel fails while LocalDevVPN rides on mobile data. Instead of
+            // an error, wait up to a minute while the status bar asks for data off, then teleport.
+            let deadline = Date().addingTimeInterval(userInitiated ? 60 : 0)
+            var result = await Self.engine {
                 LocationEngine.set(latitude: lat, longitude: lon, pairingPath: path, deviceIP: ip)
             }
+            while case .failure(let error) = result, error.kind == .tunnelUnreachable, Date() < deadline, gen == generation,
+                  waitingForDataOff || network.cellularOn {
+                waitingForDataOff = true
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+                guard gen == generation else { break }
+                result = await Self.engine {
+                    LocationEngine.set(latitude: lat, longitude: lon, pairingPath: path, deviceIP: ip)
+                }
+            }
+            waitingForDataOff = false
             engineBusy = false
             isBusy = false
             guard gen == generation else {

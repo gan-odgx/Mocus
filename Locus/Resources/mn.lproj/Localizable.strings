@@ -5,6 +5,7 @@
 /* MARK: - Map / status bar */
 "OK" = "За";
 "Connecting…" = "Холбогдож байна…";
+"Turn mobile data off…" = "Мобайл датагаа унтраана уу…";
 "Spoofing" = "Байршил солигдсон";
 "Reconnecting…" = "Дахин холбогдож байна…";
 "Disconnected" = "Холболт тасарсан";
